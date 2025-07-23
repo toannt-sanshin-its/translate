@@ -1,26 +1,123 @@
 """
-Đọc biến môi trường & cung cấp hằng số cấu hình.
+Đọc biến môi trường & cung cấp hằng số cấu hình cho dự án dịch JP→VI (RAG).
+
+- Tự động nạp .env (nếu có)
+- Hàm getenv_* an toàn (tránh lỗi khi trùng tên biến hệ thống như TEMP trên Windows)
+- Gom cấu hình vào dataclass Config
+- Có hàm validate() để cảnh báo thiếu file/path
 """
 
+from __future__ import annotations
 import os
-from dotenv import load_dotenv
+from dataclasses import dataclass, asdict
+from pathlib import Path
+from typing import Dict, Any, Optional
 
-# Nạp file .env ở thư mục gốc
-load_dotenv()
+try:
+    from dotenv import load_dotenv  # optional
+    load_dotenv()
+except Exception:
+    pass  # nếu không có dotenv, bỏ qua
 
-# ---------- Embedding ----------
-EMB_MODEL: str = os.getenv("EMB_MODEL")                         # ex: paraphrase-multilingual-MiniLM-L12-v2 -> có 384 chiều
+# ----------------- Helpers ----------------- #
+def getenv_str(name: str, default: Optional[str] = None) -> Optional[str]:
+    v = os.getenv(name)
+    return v if v is not None else default
 
-# ---------- NLLB ----------
-NLLB_MODEL: str = os.getenv("NLLB_MODEL")                      # ex: facebook/nllb-200-distilled-600M
-SRC_LANG: str = "jpn_Jpan"                                     # mã FLoRes 200 cho tiếng Nhật :contentReference[oaicite:0]{index=0}
-TGT_LANG: str = "vie_Latn"                                     # mã FLoRes 200 cho tiếng Việt :contentReference[oaicite:1]{index=1}
+def getenv_int(name: str, default: int) -> int:
+    v = os.getenv(name)
+    try:
+        return int(v) if v is not None else default
+    except ValueError:
+        return default
 
-# ---------- FAISS ----------
-INDEX_PATH: str = os.getenv("INDEX_PATH", "./indexes/faiss.index")
-META_PATH: str  = os.getenv("META_PATH",  "./indexes/meta.pkl")
+def getenv_float(name: str, default: float) -> float:
+    v = os.getenv(name)
+    try:
+        return float(v) if v is not None else default
+    except ValueError:
+        return default
 
-# ---------- Runtime ----------
-DEVICE: str = os.getenv("DEVICE", "cpu")                       # "cuda" nếu có GPU
-TOP_K: int = int(os.getenv("TOP_K", 3))                        # số câu gần nhất cần truy xuất
-SIM_THRESHOLD: float = float(os.getenv("SIM_THRESHOLD", 0.85)) # ngưỡng cosine để tin cậy bản dịch sẵn
+def getenv_bool(name: str, default: bool) -> bool:
+    v = os.getenv(name)
+    if v is None:
+        return default
+    return str(v).lower() in ("1", "true", "yes", "y", "on")
+
+def expand_path(p: str) -> str:
+    """Mở rộng ~, biến môi trường, chuyển về đường dẫn tuyệt đối chuẩn hóa."""
+    return str(Path(os.path.expandvars(os.path.expanduser(p))).resolve())
+
+# ----------------- Dataclass ----------------- #
+@dataclass
+class Config:
+    # --- Embedding & Retrieval --- #
+    EMB_MODEL: str = getenv_str("EMB_MODEL", "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2")
+
+    INDEX_PATH: str = expand_path(getenv_str("INDEX_PATH", "./indexes/faiss.index"))
+    META_PATH:  str = expand_path(getenv_str("META_PATH",  "./indexes/meta.pkl"))
+
+    TOP_K: int = getenv_int("TOP_K", 3)
+    NORMALIZE_EMB: bool = getenv_bool("NORMALIZE_EMB", True)
+
+    # --- Runtime / Device --- #
+    DEVICE: str = getenv_str("DEVICE", "cpu")  # "cpu" / "cuda"
+    THREADS: int = getenv_int("THREADS", os.cpu_count() or 4)
+
+    # --- Generation model (GGUF) --- #
+    # Dùng cho llama.cpp hoặc ctransformers
+    MODEL_PATH: str = expand_path(getenv_str("MODEL_PATH", "models/vinallama-7b-chat_q5_0.gguf"))
+    N_CTX: int = getenv_int("N_CTX", 4096)
+
+    # llama.cpp-specific
+    N_GPU_LAYERS: int = getenv_int("N_GPU_LAYERS", 0)  # 0 = CPU
+
+    # --- Decode params --- #
+    # Dùng GEN_TEMP để tránh xung đột với biến hệ thống TEMP (Windows)
+    TEMPERATURE: float = getenv_float("GEN_TEMP", 0.2)
+    MAX_TOKENS: int = getenv_int("MAX_TOKENS", 256)
+
+    # --- Prompt templates --- #
+    SYSTEM_PROMPT: str = getenv_str(
+        "SYSTEM_PROMPT",
+        "Bạn là chuyên gia dịch Nhật → Việt. Hãy dịch chính xác, tự nhiên, giữ nguyên thuật ngữ y khoa/kỹ thuật nếu đã rõ ngữ cảnh.\n"
+        "Chỉ trả về bản dịch tiếng Việt, không giải thích thêm."
+    )
+    USER_PROMPT_TEMPLATE: str = getenv_str(
+        "USER_PROMPT_TEMPLATE",
+        "Ngữ cảnh tham khảo (top {top_k}):\n{context}\n\nCâu gốc:\n{query}\n\nHãy dịch câu trên sang tiếng Việt:"
+    )
+
+    # --- Logging / Misc --- #
+    LOG_LEVEL: str = getenv_str("LOG_LEVEL", "INFO")
+
+    # -------------- Methods -------------- #
+    def to_dict(self) -> Dict[str, Any]:
+        return asdict(self)
+
+    def validate(self, strict: bool = False) -> None:
+        """
+        Kiểm tra sự tồn tại một số file quan trọng. Nếu strict=True, raise lỗi khi thiếu.
+        """
+        missing = []
+        for path_key in ["INDEX_PATH", "META_PATH", "MODEL_PATH"]:
+            p = getattr(self, path_key)
+            if not Path(p).exists():
+                missing.append((path_key, p))
+
+        if missing:
+            msg_lines = ["⚠️ Thiếu file/đường dẫn:"]
+            for k, p in missing:
+                msg_lines.append(f"  - {k}: {p}")
+            msg = "\n".join(msg_lines)
+
+            if strict:
+                raise FileNotFoundError(msg)
+            else:
+                print(msg)
+
+# ----------------- Global singleton (optional) ----------------- #
+# Bạn có thể dùng trực tiếp:
+#   from config import CFG
+#   ... rồi CFG.validate()
+CFG = Config()
