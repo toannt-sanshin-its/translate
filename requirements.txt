@@ -1,0 +1,7 @@
+faiss-cpu==1.8.0          # CPU; đổi thành faiss-gpu nếu có CUDA
+sentence-transformers==2.7.0
+transformers==4.53.3
+torch>=2.2.0
+python-dotenv>=1.0.0
+uvicorn[standard]>=0.30.0
+fastapi>=0.111.0
