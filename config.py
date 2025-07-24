@@ -58,6 +58,7 @@ class Config:
     META_PATH:  str = expand_path(getenv_str("META_PATH",  "./indexes/meta.pkl"))
 
     TOP_K: int = getenv_int("TOP_K", 3)
+    MIN_SCORE: int = getenv_int("MIN_SCORE", 0.7)
     NORMALIZE_EMB: bool = getenv_bool("NORMALIZE_EMB", True)
 
     # --- Runtime / Device --- #
@@ -78,14 +79,34 @@ class Config:
     MAX_TOKENS: int = getenv_int("MAX_TOKENS", 256)
 
     # --- Prompt templates --- #
-    SYSTEM_PROMPT: str = getenv_str(
-        "SYSTEM_PROMPT",
-        "Bạn là chuyên gia dịch Nhật → Việt. Hãy dịch chính xác, tự nhiên, giữ nguyên thuật ngữ y khoa/kỹ thuật nếu đã rõ ngữ cảnh.\n"
-        "Chỉ trả về bản dịch tiếng Việt, không giải thích thêm."
+    SYSTEM_PROMPT = (
+        "You are a concise Japanese → English translation expert. "
+        "Produce only the literal translation of the original sentence—no commentary, no extra words, no copying of examples above."
     )
+
     USER_PROMPT_TEMPLATE: str = getenv_str(
         "USER_PROMPT_TEMPLATE",
-        "Ngữ cảnh tham khảo (top {top_k}):\n{context}\n\nCâu gốc:\n{query}\n\nHãy dịch câu trên sang tiếng Việt:"
+        "Reference context (top {top_k}):\n"
+        "{context}\n"
+        "Original sentence:\n"
+        "{query}\n\n"
+        "Translate _only_ this sentence into English, _literally_ and _concise_."
+    )
+
+    # Template khi có context
+    TEMPLATE_WITH_CTX: str = getenv_str(
+        "USER_PROMPT_TEMPLATE",
+        "Reference context (top {top_k}):\n"
+        "{context}\n\n"
+        "Original sentence:\n{query}\n\n"
+        "Translate _only_ this sentence into English."
+    )
+
+    # Template khi context trống
+    TEMPLATE_NO_CTX: str = getenv_str(
+        "USER_PROMPT_TEMPLATE",
+        "Original sentence:\n{query}\n\n"
+        "Translate _only_ this sentence into English."
     )
 
     # --- Logging / Misc --- #

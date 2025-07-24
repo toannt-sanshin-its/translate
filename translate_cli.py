@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 """
-CLI dịch Nhật → Việt dùng RAG (FAISS) + LLaMA.cpp (GGUF)
+CLI dịch Nhật → Anh dùng RAG (FAISS) + LLaMA.cpp (GGUF)
 
 • Tìm top-k (mặc định 3) câu liên quan từ VectorDB (FAISS)
 • Ghép chúng làm ngữ cảnh + câu hỏi vào prompt
-• Gọi model local (GGUF) qua llama-cpp-python để sinh bản dịch
+• Gọi model local (GGUF) qua llama-cpp-python để sinh bản dịch (nhưng máy local ko hỗ trợ nên dùng tạm ctransformers)
 
 Ví dụ:
     python translate_cli_llama_rag.py \
@@ -22,27 +22,26 @@ Gợi ý build GPU cho llama-cpp-python:
     CMAKE_ARGS="-DLLAMA_CUBLAS=on" pip install llama-cpp-python --no-binary :all:
 """
 from __future__ import annotations
-import argparse
+import argparse # parse CLI flags
 import json
 import os
-import pickle
+import pickle  # load metadata index
 import sys
-from dataclasses import dataclass
 from typing import List, Tuple
-
+import time
 import faiss
 import numpy as np
 from sentence_transformers import SentenceTransformer
-from ctransformers import AutoModelForCausalLM
+from ctransformers import AutoModelForCausalLM        #  wrapper gọi LLaMA.cpp model
 from config import Config
 
 # ===================== TIỆN ÍCH ===================== #
 def load_resources(cfg: Config):
     """Tải tất cả tài nguyên một lần."""
-    # Embedding model
+    # Load Embedding model
     emb = SentenceTransformer(cfg.EMB_MODEL, device="cpu")  # encode CPU đủ nhanh cho câu ngắn
 
-    # FAISS index & metadata
+    # Load FAISS index & metadata
     if not os.path.exists(cfg.INDEX_PATH):
         sys.exit(f"❌ Không tìm thấy INDEX_PATH: {cfg.INDEX_PATH}")
     index = faiss.read_index(cfg.INDEX_PATH)
@@ -59,9 +58,9 @@ def load_resources(cfg: Config):
     llm = AutoModelForCausalLM.from_pretrained(
        "models",
        model_file=os.path.basename(cfg.MODEL_PATH),
-       model_type="llama",
-       gpu_layers=0,                       # CPU
-       context_length=cfg.N_CTX,
+       model_type="llama",                 # Nâng cao: Thay LLaMA bằng Llama 2 7B/13B hoặc Mistral 7B/8x7B (GGUF) cho chất lượng cao hơn.
+       gpu_layers=0,                       # CPU CPU-only (gpu_layers=0) , Nếu có GPU, set gpu_layers=-1 hoặc tăng số layer GPU để chạy nhanh hơn.
+       context_length=cfg.N_CTX,           # Nâng cao: Quản lý context dài hơn: tăng cfg.N_CTX (ví dụ up to 4096 hoặc 8192 nếu model hỗ trợ)
        threads=cfg.THREADS,
    )
     return emb, index, metas, llm
@@ -71,14 +70,14 @@ def embed_sentence(emb_model: SentenceTransformer, text: str, normalize: bool = 
     vec = emb_model.encode(text, normalize_embeddings=normalize).astype("float32")
     return vec
 
-
+# truy vấn top‑k nearest neighbors (faiss inner product/L2).
 def search_topk(index: faiss.Index, vec: np.ndarray, k: int) -> Tuple[List[float], List[int]]:
-    D, I = index.search(np.expand_dims(vec, 0), k)
+    D, I = index.search(np.expand_dims(vec, 0), k)        # Nâng cao: Khám phá ANN index như HNSW (IndexHNSWFlat) cho tốc độ truy vấn nhanh hơn trên dữ liệu lớn
     scores = D[0].tolist()
     idxs = I[0].tolist()
     return scores, idxs
 
-
+# Truy nested dict an toàn
 def safe_get(meta: dict, *keys, default: str = "") -> str:
     """Lấy giá trị từ dict lồng nhau, nếu không có trả default."""
     cur = meta
@@ -88,23 +87,71 @@ def safe_get(meta: dict, *keys, default: str = "") -> str:
         cur = cur[k]
     return cur if isinstance(cur, str) else default
 
+# def build_context(metas, idxs, scores, jp, cfg: Config):
+#     chunks = []
+#     for idx, score in zip(idxs, scores):
+#         if score < cfg.MIN_SCORE: 
+#             continue
+#         m = metas[idx]
+#         jp_ex = safe_get(m, "jp")
+#         vi_ex = safe_get(m, "translation") or safe_get(m, "metadata", "translation")
+#         # in kèm score (nếu bạn muốn)
+#         # chunks.append(f"- JP: {jp_ex}\n  VI: {vi_ex}\n  (score: {score:.3f})")
+#         if jp_ex and vi_ex:
+#             # ideal: có cả JP/EN example
+#             chunks.append(f"- JP: {jp_ex}\n  EN: {vi_ex}")
+#         elif vi_ex:
+#             # chỉ có English example: vẫn hữu ích để làm style guide
+#             chunks.append(f"- Example: {vi_ex}")
+#         else:
+#             # không có data gì, skip 
+#             continue
+#     return "\n\n".join(chunks)
 
-def build_context(metas, idxs: List[int]) -> str:
+def build_context(metas, idxs, scores, jp, cfg: Config) -> str:
+    seen_vi = set()
     chunks = []
-    for i in idxs:
-        m = metas[i]
-        # tuỳ cấu trúc metadata của bạn. Ở đây thử nhiều khả năng
-        jp = safe_get(m, "jp", default="") or safe_get(m, "metadata", "jp", default="")
-        vi = safe_get(m, "translation", default="") or safe_get(m, "metadata", "translation", default="")
-        # Nếu chỉ cần dịch, có thể giữ JP/VI hay chỉ JP. Ta để cả hai để model hiểu phong cách
-        chunk = f"- JP: {jp}\n  VI: {vi}" if vi else f"- JP: {jp}"
-        chunks.append(chunk)
-    return "\n\n".join(chunks)
 
+    for idx, score in zip(idxs, scores):
+        # 1. Bỏ qua nếu score < ngưỡng
+        if score < cfg.MIN_SCORE:
+            continue
+
+        # 2. Lấy bản dịch mẫu (VI)
+        m      = metas[idx]
+        vi_ex  = safe_get(m, "translation") \
+               or safe_get(m, "metadata", "translation")
+        if not vi_ex:
+            continue
+
+        # 3. Lọc duplicate
+        if vi_ex in seen_vi:
+            continue
+        seen_vi.add(vi_ex)
+
+        # 4. Thêm vào chunks
+        chunks.append(f"- Example: {vi_ex}")
+
+        # 5. Giới hạn số ví dụ
+        if len(chunks) >= getattr(cfg, "CONTEXT_EXAMPLES", 2):
+            break
+
+    # Nếu không có example nào, trả về chuỗi rỗng để LLM tự fallback
+    return "\n".join(chunks)
 
 def call_ctfm(llm, cfg: Config, context: str, query: str) -> str:
     # kết hợp system + user prompt thành 1 chuỗi
     user_prompt = cfg.USER_PROMPT_TEMPLATE.format(top_k=cfg.TOP_K, context=context, query=query)
+
+    # if context.strip():
+    #     body = cfg.TEMPLATE_WITH_CTX.format(
+    #         top_k=cfg.TOP_K,
+    #         context=context,
+    #         query=query
+    #     )
+    # else:
+    #     body = cfg.TEMPLATE_NO_CTX.format(query=query)
+
     prompt = f"<<SYS>>{cfg.SYSTEM_PROMPT}<<SYS>>\n{user_prompt}\n"
     print('==================== Prompt ========================')
     print(prompt)
@@ -112,23 +159,30 @@ def call_ctfm(llm, cfg: Config, context: str, query: str) -> str:
     return llm(
         prompt,
         temperature=cfg.TEMPERATURE,
-        max_new_tokens=cfg.MAX_TOKENS,
+        max_new_tokens=cfg.MAX_TOKENS,      # limit độ dài output.
         stop=["</s>", "<<SYS>>"]   # tuỳ model, có thể bỏ
     ).strip()
 
 def translate_one(emb, index, metas, llm, cfg: Config, jp: str) -> Tuple[str, str, float]:
+    # 1. Embed & search
     vec = embed_sentence(emb, jp, normalize=cfg.NORMALIZE_EMB)
     scores, idxs = search_topk(index, vec, cfg.TOP_K)
-    context = build_context(metas, idxs)
-    print('==================== Context ========================')
-    print(context)
-    print("=====================================================")
+    best_score = scores[0]
+
+    # 2. Build context chỉ khi neighbor đầu tiên đủ tốt
+    if best_score >= cfg.MIN_SCORE:
+        context = build_context(metas, idxs, scores, jp, cfg)
+    else:
+        context = ""
     vi = call_ctfm(llm, cfg, context, jp)
     return vi, "llama_ctx", float(scores[0])
 
+def get_device_label(cfg: Config) -> str:
+    return "GPU" if getattr(cfg, "gpu_layers", 0) and cfg.gpu_layers > 0 else "CPU"
+
 # ===================== MAIN ===================== #
 def parse_args():
-    p = argparse.ArgumentParser(description="CLI dịch Nhật → Việt (RAG + LLaMA)")
+    p = argparse.ArgumentParser(description="CLI dịch Nhật → Anh (RAG + LLaMA)")
     g = p.add_mutually_exclusive_group(required=True)
     g.add_argument("--text", help="Câu tiếng Nhật cần dịch")
     g.add_argument("--input_file", help="File .txt, mỗi dòng một câu JP")
@@ -141,14 +195,22 @@ def main():
     cfg = Config()
 
     emb, index, metas, llm = load_resources(cfg)
+    device = get_device_label(cfg)
 
     # Một câu
     if args.text:
+        start_time = time.perf_counter()
         vi, src, score = translate_one(emb, index, metas, llm, cfg, args.text)
+        last_time = time.perf_counter() - start_time
         if args.json:
-            print(json.dumps({"src": src, "score": score, "jp": args.text, "vi": vi}, ensure_ascii=False))
+            print(json.dumps({"src": src, "score": score, "jp": args.text, "en": vi}, ensure_ascii=False))
         else:
             print(f"[{src} | {score:.4f}] {vi}")
+        
+        with open("translate_log.txt", "a", encoding="utf-8") as logf:
+            logf.write(
+                f"TIME: {last_time:.4f}\tSCORE: {score:.4f}\tDEVICE: {cfg.DEVICE}\tJP: {args.text}\tEN: {vi}\n"
+            )
         return
 
     # Batch
