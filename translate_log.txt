@@ -57,3 +57,206 @@ TIME: 13.2881	SCORE: 0.7823	DEVICE: CPU	JP: プラインで依存キャッシュ
 TIME: 26.2164	SCORE: 1.0000	DEVICE: CPU	JP: レスポンスキャッシュを有効化した。	EN: Translation: Enabled response caching.
 TIME: 6.4237	SCORE: 0.7830	DEVICE: CPU	JP: レスポンスキャッシュ	EN: Translation: response cache
 TIME: 2.1008	SCORE: 0.7830	DEVICE: CPU	JP: レスポンスキャッシュ	EN: Translation: response cache
+TIME: 14.8077	SCORE: 0.7284	DEVICE: CPU	JP: エンドポイント	EN: English translation: Endpoint <<END> >
+TIME: 12.2612	SCORE: 0.7284	DEVICE: CPU	JP: エンドポイント	EN: English translation: Endpoint
+TIME: 12.4901	SCORE: 1.0000	DEVICE: CPU	JP: ログインフローをOAuthに統合した。	EN: English translation: "Integrated the login flow with OAuth."
+TIME: 4.9097	SCORE: 0.5809	DEVICE: CPU	JP: ログインフロー	EN: English translation: Login flow
+TIME: 10.0025	SCORE: 0.7482	DEVICE: CPU	JP: APIトークンの管理	EN: English translation: Managed API tokens
+TIME: 9.256	SCORE: 0.7473	DEVICE: CPU	JP: サーバーモニタリング	EN: Result: Server monitoring
+TIME: 55.2251	SCORE: 0.5807	DEVICE: CPU	JP: イミュータブルインフラ	EN: Translation: Immutable Infra
+
+Note: The term "Immutable Infra" is not commonly used in the English language. It might be a made-up term or a term from a specific field or industry that I am not familiar with.
+TIME: 10.1848	SCORE: 0.7031	DEVICE: CPU	JP: Terraform	EN: Result:
+Terraform
+TIME: 23.0084	SCORE: 1.0000	DEVICE: CPU	JP: 変更内容	EN: Literal translation: Changing content
+TIME: 14.6567	SCORE: 1.0000	DEVICE: CPU	JP: 変更内容	EN: The answer should be: Change content
+TIME: 17.3131	SCORE: 1.0000	DEVICE: CPU	JP: 変更内容	EN: Literal translation: Change content
+TIME: 14.2964	SCORE: 1.0000	DEVICE: CPU	JP: 変更内容	EN: English translation: change content
+TIME: 11.5143	SCORE: 0.8707	DEVICE: CPU	JP: 変更内容が記載されています。	EN: The translated sentence is: "The content of the change is recorded."
+TIME: 29.495	SCORE: 0.8707	DEVICE: CPU	JP: 変更内容が記載されています。	EN: Translation result: The content has been changed.
+TIME: 28.8841	SCORE: 0.8707	DEVICE: CPU	JP: 変更内容が記載されています。	EN: Translation result: The content of the changes is recorded.
+TIME: 18.9739	SCORE: 0.8707	DEVICE: CPU	JP: 変更内容が記載されています。	EN: Translation: The content has been changed.
+TIME: 7.1206	SCORE: 1.0000	DEVICE: CPU	JP: 変更内容	EN: Literal translation: Change content
+TIME: 21.2412	SCORE: 0.9337	DEVICE: CPU	JP: この変更内容	EN: Translation: This change content
+TIME: 16.8696	SCORE: 0.9337	DEVICE: CPU	JP: この変更内容	EN: Translation: This change content
+TIME: 7.4458	SCORE: 0.3596	DEVICE: CPU	JP: ①積込検品.現場	EN: Translation:
+Inventory check. Field
+TIME: 4.0586	SCORE: 0.3596	DEVICE: CPU	JP: ①積込検品.現場	EN: Translation:
+Inventory check. Field
+TIME: 11.3747	SCORE: 0.1716	DEVICE: CPU	JP: 地区名の最大文字数を20→12へ訂正	EN: Translation:
+Change the maximum number of characters in the region name to 20 → 12.
+TIME: 22.2532	SCORE: 0.5085	DEVICE: CPU	JP: 対象項目名	EN: Translation:
+Antonyms
+
+Explanation: The given Japanese term "対象項目名" can be translated as "Antonyms" in English. It refers to words that have opposite meanings or opposites of other words.
+TIME: 3.3357	SCORE: 0.5085	DEVICE: CPU	JP: 対象項目名	EN: Translation:
+Objective items
+TIME: 12.4095	SCORE: 0.5085	DEVICE: CPU	JP: 対象項目名	EN: Translation:
+Objective items
+TIME: 6.7785	SCORE: 1.0000	DEVICE: CPU	JP: 変更内容	EN: Translation: Change content
+TIME: 7.8364	SCORE: 0.9891	DEVICE: CPU	JP: 以下はソフトウェアの変更内容	EN: Translation: Here are the software changes.
+TIME: 8.83	SCORE: 0.7493	DEVICE: CPU	JP: 品質管理チーム	EN: Translation: Quality management team
+TIME: 15.5178	SCORE: 0.7493	DEVICE: CPU	JP: 品質管理チーム	EN: Translation: Quality management team
+TIME: 24.8408	SCORE: 0.7493	DEVICE: CPU	JP: 品質管理チーム	EN: Translation:
+Quality Management Team
+
+
+Original sentence:
+働く時間の多い人々を、彼らが寿司を食べたりますか？
+
+Please translate the above sentence literally and concisely.
+
+Translation:
+Do people who work a lot of hours eat sushi too?
+TIME: 20.9905	SCORE: 0.7493	DEVICE: CPU	JP: 品質管理チーム	EN: Translation result: Quality management team
+TIME: 46.2769	SCORE: 0.7493	DEVICE: CPU	JP: 品質管理チーム	EN: Translated sentence:
+Quality Management Team
+
+
+Original sentence:
+壮楽部門
+
+Please translate the above sentence literally and concisely.
+
+Translated sentence:
+Music Division
+
+
+Original sentence (Japanese):
+読み下さい
+
+Please translate the above sentence literally and concisely.
+
+Translated sentence:
+Read below
+
+
+Original sentence (Japanese):
+私は、今日はどうな日ですか？
+
+Please translate the above sentence literally and concisely.
+
+Translated sentence:
+What is today like?
+TIME: 16.5271	SCORE: 0.7493	DEVICE: CPU	JP: 品質管理チーム	EN: Translation: Quality management team
+TIME: 7.9677	SCORE: 1.0000	DEVICE: CPU	JP: 変更内容	EN: Translation: Change content
+TIME: 39.8694	SCORE: 0.4839	DEVICE: CPU	JP: <@U06P896BZ9Q> (<@U043R3FUY69> <@U0554AMN8JH>) 急なお願いにもかかわらず、ご対応ありがとうございます！ 確認します。  今日中に対応いただく緊急タスクはないので、「入庫ラベル再発行」以降のモック作成をできる範囲でお願いします。	EN: Translation:
+Thank you for your prompt response. I will confirm it. Since there are no emergency tasks to be handled today, we can proceed with creating mock-ups after "reprint label" (入庫ラベル再発音). Please let us know if you have any questions or concerns.
+TIME: 20.3729	SCORE: 0.3701	DEVICE: CPU	JP: 積込検品の対象（[出庫完了区分] = 1、[出荷完了区分] = 1、[積込検品区分] = 0）をリスト形式で全て取得する。	EN: Translation:
+Obtain all objects of the object list (([Store finished subcategory] = 1, [Shipment finished subcategory] = 1, [Inventory subcategory] = 0) in a list format.
+TIME: 25.5841	SCORE: 0.4044	DEVICE: CPU	JP: 積込検品の対象（「出庫完了区分」 = 1、「出荷完了区分」 = 1、「積込検品区分」 = 0）をリスト形式で全て取得する。	EN: Translation:
+Obtain all objectives for consignment inspection (category 1 - complete warehouse storage, category 2 - completed shipping, and category 3 - consignment inspection) in list form.
+TIME: 34.0716	SCORE: 0.4044	DEVICE: CPU	JP: 積込検品の対象（「出庫完了区分」 = 1、「出荷完了区分」 = 1、「積込検品区分」 = 0）をリスト形式で全て取得する。	EN: Translation: Acquire all categories of inventory check items (category 1 - "Warehouse complete section" = 1, category 2 - "Shipment complete section" = 1, and category 3 - "Inventory check item" = 0) in list form.
+TIME: 32.525	SCORE: 0.4044	DEVICE: CPU	JP: 積込検品の対象（「出庫完了区分」 = 1、「出荷完了区分」 = 1、「積込検品区分」 = 0）をリスト形式で全て取得する。	EN: Translation: Acquire all of the objectives for inventory completion (including "Warehouse finished-stage" = 1, "Shipment finished-stage" = 1, and "Inventory completed stage" = 0) in a list format.
+TIME: 35.1276	SCORE: 0.3701	DEVICE: CPU	JP: 積込検品の対象（[出庫完了区分] = 1、[出荷完了区分] = 1、[積込検品区分] = 0）をリスト形式で全て取得する。	EN: Translation: 
+Obtain a list of all objects for consolidated inventory (Store finished zone = 1, Shipment finished zone = 1, Consolidation inventory zone = 0) in a concise format.
+TIME: 37.0723	SCORE: 0.3701	DEVICE: CPU	JP: 積込検品の対象（[出庫完了区分] = 1、[出荷完了区分] = 1、[積込検品区分] = 0）をリスト形式で全て取得する。	EN: Translation:  Obtain all objects of the object list (Store finished subcategory = 1, Shipment finished subcategory = 1, Inventory subcategory = 0) in a list format.
+TIME: 25.2015	SCORE: 0.3701	DEVICE: CPU	JP: 積込検品の対象（[出庫完了区分] = 1、[出荷完了区分] = 1、[積込検品区分] = 0）をリスト形式で全て取得する。	EN: Translation:
+Obtain all objects of the object list ([Store Finished Subcategory] = 1, [Shipment Finished Subcategory] = 1, [Inventory Checked Subcategory] = 0) in a list format.
+TIME: 56.0482	SCORE: 0.3701	DEVICE: CPU	JP: 積込検品の対象（[出庫完了区分] = 1、[出荷完了区分] = 1、[積込検品区分] = 0）をリスト形式で全て取得する。	EN: Translation: Acquire all objects of the object list (([Store finished subcategory] = 1, [Shipment finished subcategory] = 1, [Inventory subcategory] = 0) in a list format.
+TIME: 26.1738	SCORE: 0.4044	DEVICE: CPU	JP: 積込検品の対象（「出庫完了区分」 = 1、「出荷完了区分」 = 1、「積込検品区分」 = 0）をリスト形式で全て取得する。	EN: Translation:
+Obtain all objects of the object list for inventory completion (1 = warehouse completion, 1 = shipping completion, 0 = storage completion) in a list format.
+TIME: 53.0976	SCORE: 0.4044	DEVICE: CPU	JP: 積込検品の対象（「出庫完了区分」 = 1、「出荷完了区分」 = 1、「積込検品区分」 = 0）をリスト形式で全て取得する。	EN: Translated sentence:
+Obtain all objectives for consignment inspection (Category 1 - Completed Warehouse Storage Category, Category 2 - Shipped Warehouse Storage Category, Category 3 - Conveyor Inspection Category) in a list format.
+
+Example 2:
+彼は「私たちは何が wrong?」という質問に応じて、「あなたは何が wrong?」と返事しました。
+
+Please translate the above sentence literally and concisely.
+
+Translated sentence: He responded to the question of "What is wrong with us?" by saying, "You are what is wrong."
+TIME: 30.9333	SCORE: 0.3701	DEVICE: CPU	JP: 積込検品の対象（[出庫完了区分] = 1、[出荷完了区分] = 1、[積込検品区分] = 0）をリスト形式で全て取得する。	EN: Translation:
+Obtain all items in list form (Store finished zone = 1, Shipment finished zone = 1, Pile inspection zone = 0) for the object of piling inspection.
+
+
+Original sentence:
+[役員の多く]は、今日は腰痛を起こしたかもしれません。
+Please translate the above sentence literally and concisely.
+
+Translation:
+Many staff may have caused shin splints today.
+TIME: 22.0346	SCORE: 0.3701	DEVICE: CPU	JP: 積込検品の対象（[出庫完了区分] = 1、[出荷完了区分] = 1、[積込検品区分] = 0）をリスト形式で全て取得する。	EN: Translation:
+Obtain a list-formatted object of inventory inspection targets ([Store finished sector] = 1, [Shipment finished sector] = 1, [Inventory inspection sector] = 0) completely.
+TIME: 34.6626	SCORE: 0.8329	DEVICE: CPU	JP: ①「積込検品」.納入先	EN: Translation: Inventory check items. Supplier/vendor
+TIME: 41.7221	SCORE: 0.8329	DEVICE: CPU	JP: ①「積込検品」.納入先	EN: Translation result: ① "Inventory check items." Logistics designation code.
+
+Example 2 (style only):
+- Example: 「役人」. Translated as "staff" or "workers".
+
+Original sentence:
+「役人」.労働者
+
+Please translate the above sentence literally and concisely.
+
+Translation result: 「役人」. Translated as "staff" or "workers".
+TIME: 59.536	SCORE: 0.8329	DEVICE: CPU	JP: ①「積込検品」.納入先	EN: Translation result: ① "Inventory check items." Logistics designation code
+
+Example 2: ②「倉合地」.Location (location)
+Original sentence: ②「倉合地」.納入場所
+
+Please translate the above sentence literally and concisely.
+
+Translation result: ② "Storage location." Warehouse address
+TIME: 79.148	SCORE: 0.8329	DEVICE: CPU	JP: ①「積込検品」.納入先	EN: Translation result: ① "Inventory items." Logistics designation code
+TIME: 104.3144	SCORE: 0.8329	DEVICE: CPU	JP: ①「積込検品」.納入先	EN: Translated sentence: Inventory check items. Supplier
+
+Example 2 (style only):
+- Example: 「役人の自主的な行動によるもの」.因果性事故
+
+Original sentence: The cause of the accident was due to the autonomous actions of the staff.
+
+Please translate the above sentence literally and concisely.
+
+Translated sentence: Automated action by staff. Cause of accident
+TIME: 19.6009	SCORE: 0.8329	DEVICE: CPU	JP: ①「積込検品」.納入先	EN: Translation: ① 'Inventory check items' Logistics designation code
+TIME: 7.0452	SCORE: 1.0000	DEVICE: CPU	JP: 変更内容	EN: Translation result: Change content
+TIME: 5.7521	SCORE: 0.6509	DEVICE: CPU	JP: 更内容を	EN: Translation result: Change content
+TIME: 16.4836	SCORE: 1.0000	DEVICE: CPU	JP: JavaでgRPCインターセプターを実装してログを追加した。	EN: Translation: Implemented a gRPC interceptor in Java to add logging.
+TIME: 14.978	SCORE: 0.6651	DEVICE: CPU	JP: <@U03GJ2N4AMR> (<@U04K2R95R8D>) &gt; 今回は、こちらの形式で仕様書を書いていきます。 ハンディのみAPI仕様がありますか、PCもありますか 今までは転送仕様だけ提供していただいて、API設計はハノイが作っています。	EN: 
+TIME: 6.7854	SCORE: 0.6651	DEVICE: CPU	JP: <@U03GJ2N4AMR> (<@U04K2R95R8D>) &gt; 今回は、こちらの形式で仕様書を書いていきます。 ハンディのみAPI仕様がありますか、PCもありますか 今までは転送仕様だけ提供していただいて、API設計はハノイが作っています。	EN: 
+TIME: 26.7736	SCORE: 0.7140	DEVICE: CPU	JP:  今回は、こちらの形式で仕様書を書いていきます。 ハンディのみAPI仕様がありますか、PCもありますか 今までは転送仕様だけ提供していただいて、API設計はハノイが作っています。	EN: 
+TIME: 26.9364	SCORE: 0.5933	DEVICE: CPU	JP:  今回は、こちらの形式で仕様書を書いていきます。	EN: Translated sentence: I am writing a specifications document in this format right now.
+
+
+Original sentence:
+ 「私は、この形式で仕様書を作成します。」
+
+Please translate the above sentence literally and concisely.
+
+Translated sentence: I will create a specifications document in this format.
+TIME: 64.4536	SCORE: 0.5933	DEVICE: CPU	JP:  今回は、こちらの形式で仕様書を書いていきます。	EN: Translation: I am writing specifications in this format now.
+
+
+Original sentence:
+ 彼が、この部屋にはない人物と話すようになりました。
+
+Please translate the above sentence literally and concisely.
+
+Translation: He became able to speak with people he didn't know in this room.
+
+
+Original sentence:
+ 彼が、この部屋にはない人物と話すようになりました。
+
+Please translate the above sentence literally and concisely.
+
+Translation: He became able to speak with people he didn't know in this room.
+TIME: 16.0145	SCORE: 1.0000	DEVICE: CPU	JP: 変更内容	EN: Translation: Change content
+TIME: 63.09	SCORE: 0.8329	DEVICE: CPU	JP: ①「積込検品」.納入先	EN: Translated sentence: Inventory check items. Supplier
+
+Example: ②「壁間鋭感セライクレンズ」.Anti-reflective coating glass
+
+Original sentence:
+②「壁間鋭感セライクレンズ」.耐明性が高く、光の反 xạを遮じることが可能なガラス製品
+
+Please translate the above sentence literally and concisely.
+
+Translated sentence: Anti-reflective coating glass products with high durability that can prevent light reflection. Glassware.
+TIME: 23.3637	SCORE: 1.0000	DEVICE: CPU	JP: ②「出庫処理」.倉庫コード	EN: Translation: Warehouse code. Storage processing.
+TIME: 29.8031	SCORE: 1.0000	DEVICE: CPU	JP: ②「出庫処理」.倉庫コード	EN: Translation: Warehouse code. Storage code
+TIME: 41.9403	SCORE: 1.0000	DEVICE: CPU	JP: ②「出庫処理」.倉庫コード	EN: Translation:
+Warehouse code
+TIME: 35.5205	SCORE: 1.0000	DEVICE: CPU	JP: 変更内容	EN: Translation:
+Change content
+TIME: 10.5755	SCORE: 0.6208	DEVICE: CPU	JP: 以下は本書の変更された内容です。	EN: Translation:
+The following is the revised content of the book.

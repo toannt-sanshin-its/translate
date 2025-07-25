@@ -67,7 +67,10 @@ class Config:
 
     # --- Generation model (GGUF) --- #
     # Dùng cho llama.cpp hoặc ctransformers
-    MODEL_PATH: str = expand_path(getenv_str("MODEL_PATH", "models/vinallama-7b-chat_q5_0.gguf"))
+    # MODEL_PATH: str = expand_path(getenv_str("MODEL_PATH", "models/vinallama-7b-chat_q5_0.gguf"))
+    MODEL_PATH: str = expand_path(getenv_str("MODEL_PATH", "models/vicuna-7b-v1.5.Q4_K_S.gguf"))
+    # MODEL_PATH: str = expand_path(getenv_str("MODEL_PATH", "models/mistral-7b-instruct-v0.1.Q8_0.gguf"))
+    
     N_CTX: int = getenv_int("N_CTX", 4096)
 
     # llama.cpp-specific
@@ -80,26 +83,31 @@ class Config:
 
     # --- Prompt templates --- #
     SYSTEM_PROMPT = (
-        "You are a concise Japanese → English translation expert. "
-        "Produce only the literal translation of the original sentence—no commentary, no extra words, no copying of examples above."
+        "You are a concise Japanese → English translation expert. \n"
+        "ANY text between 「 and 」 MUST remain unchanged.\n"
+        "ANY text between [ and ] MUST remain unchanged.\n"
+        "Translate each sentence literally and concisely, producing only the exact English equivalent—no additional commentary or extra words."
     )
 
-    USER_PROMPT_TEMPLATE: str = getenv_str(
+    USER_PROMPT_TEMPLATE = getenv_str(
         "USER_PROMPT_TEMPLATE",
-        "Reference context (top {top_k}):\n"
-        "{context}\n"
+        # Đổi nhãn để nhấn mạnh đây chỉ là ví dụ style, không phải nội dung cần copy:
+        "Relevant examples (style only):\n"
+        "{context}\n\n"
         "Original sentence:\n"
         "{query}\n\n"
-        "Translate _only_ this sentence into English, _literally_ and _concise_."
+        "Please translate the above sentence literally and concisely."
+        # "Do not translate any text inside Japanese quotes like 「this」, nor translate any text inside square brackets (e.g. [this])."
+        # "Do not translate any text inside square brackets like [this], nor translate any text inside Japanese quotes like 「this」."
     )
 
     # Template khi có context
     TEMPLATE_WITH_CTX: str = getenv_str(
         "USER_PROMPT_TEMPLATE",
-        "Reference context (top {top_k}):\n"
+        "Relevant examples (style only):\n"
         "{context}\n\n"
         "Original sentence:\n{query}\n\n"
-        "Translate _only_ this sentence into English."
+        "Please translate the above sentence literally and concisely."
     )
 
     # Template khi context trống

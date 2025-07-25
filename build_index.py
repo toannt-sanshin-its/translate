@@ -20,7 +20,7 @@ import numpy as np
 import faiss
 from sentence_transformers import SentenceTransformer
 from transformers import AutoTokenizer
-from langchain.text_splitter import CharacterTextSplitter
+from langchain.text_splitter import CharacterTextSplitter, RecursiveCharacterTextSplitter
 
 # --- 1. Đọc tham số CLI ---
 def parse_args():
@@ -44,20 +44,6 @@ def load_jsonl(path):
         for line in f:
             yield json.loads(line)
 
-def chunk_text(text: str, tokenizer, max_len: int, stride: int):
-    ids = tokenizer.encode(text)
-    chunks = []
-    start = 0
-    while start < len(ids):
-        end = min(start + max_len, len(ids))
-        chunk_ids = ids[start:end]
-        chunk_text = tokenizer.decode(chunk_ids, skip_special_tokens=True)
-        chunks.append((start, end, chunk_text))
-        if end == len(ids):
-            break
-        start += max_len - stride
-    return chunks
-
 def main():
     args = parse_args()
 
@@ -72,7 +58,17 @@ def main():
     ) # Chia chuỗi text thành token IDs rồi ngược lại từ IDs thành text.
 
     # --- Thiết lập Text Splitter ---
-    text_splitter = CharacterTextSplitter(
+    # text_splitter = CharacterTextSplitter(
+    #     chunk_size=args.max_tokens,
+    #     chunk_overlap=args.stride,
+    #     length_function=lambda x: len(hf_tokenizer.encode(x)),
+    #     separator=["。", "！", "？", "\n\n"]
+    # )
+
+    # Tạo Recursive splitter
+    text_splitter = RecursiveCharacterTextSplitter(
+        # các separator ưu tiên cắt: ngắt câu Nhật, dấu xuống dòng đôi, rồi ký tự bất kỳ
+        separators=["。", "！", "？", "\n\n", ""],
         chunk_size=args.max_tokens,
         chunk_overlap=args.stride,
         length_function=lambda x: len(hf_tokenizer.encode(x))

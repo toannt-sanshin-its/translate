@@ -59,10 +59,25 @@ def load_resources(cfg: Config):
        "models",
        model_file=os.path.basename(cfg.MODEL_PATH),
        model_type="llama",                 # Nâng cao: Thay LLaMA bằng Llama 2 7B/13B hoặc Mistral 7B/8x7B (GGUF) cho chất lượng cao hơn.
+    #    model_type="mistral",                 # Nâng cao: Thay LLaMA bằng Llama 2 7B/13B hoặc Mistral 7B/8x7B (GGUF) cho chất lượng cao hơn.
        gpu_layers=0,                       # CPU CPU-only (gpu_layers=0) , Nếu có GPU, set gpu_layers=-1 hoặc tăng số layer GPU để chạy nhanh hơn.
        context_length=cfg.N_CTX,           # Nâng cao: Quản lý context dài hơn: tăng cfg.N_CTX (ví dụ up to 4096 hoặc 8192 nếu model hỗ trợ)
        threads=cfg.THREADS,
    )
+    # llm = AutoModel.from_pretrained(
+    #     cfg.MODEL_PATH,            # đường dẫn tới .gguf của bạn
+    #     model_type="llama",        # Vicuna xây trên kiến trúc Llama
+    #     backend="gguf",            # định dạng file
+    #     n_ctx=cfg.N_CTX,           # context window
+    #     threads=cfg.THREADS
+    # )
+
+    try:
+        actual_path = getattr(llm, "model_path", None)
+        print(f"✔️ Model path in LLM object: {actual_path}")
+    except Exception:
+        pass
+
     return emb, index, metas, llm
 
 # embedding câu tiếng nhật thành vector float32
@@ -86,27 +101,6 @@ def safe_get(meta: dict, *keys, default: str = "") -> str:
             return default
         cur = cur[k]
     return cur if isinstance(cur, str) else default
-
-# def build_context(metas, idxs, scores, jp, cfg: Config):
-#     chunks = []
-#     for idx, score in zip(idxs, scores):
-#         if score < cfg.MIN_SCORE: 
-#             continue
-#         m = metas[idx]
-#         jp_ex = safe_get(m, "jp")
-#         vi_ex = safe_get(m, "translation") or safe_get(m, "metadata", "translation")
-#         # in kèm score (nếu bạn muốn)
-#         # chunks.append(f"- JP: {jp_ex}\n  VI: {vi_ex}\n  (score: {score:.3f})")
-#         if jp_ex and vi_ex:
-#             # ideal: có cả JP/EN example
-#             chunks.append(f"- JP: {jp_ex}\n  EN: {vi_ex}")
-#         elif vi_ex:
-#             # chỉ có English example: vẫn hữu ích để làm style guide
-#             chunks.append(f"- Example: {vi_ex}")
-#         else:
-#             # không có data gì, skip 
-#             continue
-#     return "\n\n".join(chunks)
 
 def build_context(metas, idxs, scores, jp, cfg: Config) -> str:
     seen_vi = set()
@@ -141,7 +135,7 @@ def build_context(metas, idxs, scores, jp, cfg: Config) -> str:
 
 def call_ctfm(llm, cfg: Config, context: str, query: str) -> str:
     # kết hợp system + user prompt thành 1 chuỗi
-    user_prompt = cfg.USER_PROMPT_TEMPLATE.format(top_k=cfg.TOP_K, context=context, query=query)
+    user_prompt = cfg.USER_PROMPT_TEMPLATE.format(context=context, query=query)
 
     prompt = f"<<SYS>>{cfg.SYSTEM_PROMPT}<<SYS>>\n{user_prompt}\n"
     print('==================== Prompt ========================')
@@ -158,6 +152,9 @@ def translate_one(emb, index, metas, llm, cfg: Config, jp: str) -> Tuple[str, st
     # 1. Embed & search
     vec = embed_sentence(emb, jp, normalize=cfg.NORMALIZE_EMB)
     scores, idxs = search_topk(index, vec, cfg.TOP_K)
+    print("============================= Score =======================")
+    print(scores)
+    print("===========================================================")
     best_score = scores[0]
 
     # 2. Build context chỉ khi neighbor đầu tiên đủ tốt
@@ -232,7 +229,6 @@ def main():
         else:
             for o in outputs:
                 print(o)
-
 
 if __name__ == "__main__":
     main()
