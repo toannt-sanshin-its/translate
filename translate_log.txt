@@ -49,3 +49,11 @@ TIME: 18.1098	SCORE: 0.8656	DEVICE: CPU	JP: システムは、分散キャッシ
 The system uses distributed caching to optimize data access performance.
 TIME: 28.0436	SCORE: 0.8656	DEVICE: CPU	JP: システムは、分散キャッシュを使用して	EN: (Please don't translate the entire sentence or add extra words.)
 TIME: 20.4548	SCORE: 0.8656	DEVICE: CPU	JP: システムは、分散キャッシュを使用して	EN: English translation: "The system uses distributed caching."
+TIME: 87.2616	SCORE: 1.0000	DEVICE: CPU	JP: NestJSでMiddlewareを作成してロギングを行った。	EN: Translation: Created middleware in NestJS to perform logging.
+TIME: 11.441	SCORE: 0.5695	DEVICE: CPU	JP: 作成してロギングを行った。	EN: Translation: I created it and recorded it.
+TIME: 24.9876	SCORE: 1.0000	DEVICE: CPU	JP: NestJSでMiddlewareを作成してロギングを行った。	EN: English translation:
+Created middleware in NestJS to perform logging.
+TIME: 13.2881	SCORE: 0.7823	DEVICE: CPU	JP: プラインで依存キャッシュを活用した。	EN: Translation: Used cached responses at the main level.
+TIME: 26.2164	SCORE: 1.0000	DEVICE: CPU	JP: レスポンスキャッシュを有効化した。	EN: Translation: Enabled response caching.
+TIME: 6.4237	SCORE: 0.7830	DEVICE: CPU	JP: レスポンスキャッシュ	EN: Translation: response cache
+TIME: 2.1008	SCORE: 0.7830	DEVICE: CPU	JP: レスポンスキャッシュ	EN: Translation: response cache

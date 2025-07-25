@@ -132,9 +132,9 @@ def build_context(metas, idxs, scores, jp, cfg: Config) -> str:
         # 4. Thêm vào chunks
         chunks.append(f"- Example: {vi_ex}")
 
-        # 5. Giới hạn số ví dụ
-        if len(chunks) >= getattr(cfg, "CONTEXT_EXAMPLES", 2):
-            break
+        # # 5. Giới hạn số ví dụ
+        # if len(chunks) >= getattr(cfg, "CONTEXT_EXAMPLES", 2):
+        #     break
 
     # Nếu không có example nào, trả về chuỗi rỗng để LLM tự fallback
     return "\n".join(chunks)
@@ -142,15 +142,6 @@ def build_context(metas, idxs, scores, jp, cfg: Config) -> str:
 def call_ctfm(llm, cfg: Config, context: str, query: str) -> str:
     # kết hợp system + user prompt thành 1 chuỗi
     user_prompt = cfg.USER_PROMPT_TEMPLATE.format(top_k=cfg.TOP_K, context=context, query=query)
-
-    # if context.strip():
-    #     body = cfg.TEMPLATE_WITH_CTX.format(
-    #         top_k=cfg.TOP_K,
-    #         context=context,
-    #         query=query
-    #     )
-    # else:
-    #     body = cfg.TEMPLATE_NO_CTX.format(query=query)
 
     prompt = f"<<SYS>>{cfg.SYSTEM_PROMPT}<<SYS>>\n{user_prompt}\n"
     print('==================== Prompt ========================')
