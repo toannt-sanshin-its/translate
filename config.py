@@ -134,8 +134,6 @@ class Config:
     # --- Logging / Misc --- #
     LOG_LEVEL: str = getenv_str("LOG_LEVEL", "INFO")
 
-    OPENAI_MODEL: str = getenv_str("OPENAI_MODEL", "gpt-3.5-turbo")
-
     # -------------- Methods -------------- #
     def to_dict(self) -> Dict[str, Any]:
         return asdict(self)
