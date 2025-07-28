@@ -1066,3 +1066,15 @@
 {"id": "doc3000_chunk_68", "text": "最新のバージョンに基づいて変更内容を更新しました。", "metadata": {"language": "ja", "translation": "The latest version, based on the changes have been updated."}}
 {"id": "doc3000_chunk_69", "text": "提出された要望を参考にして変更内容を更新しました。", "metadata": {"language": "ja", "translation": "The submitted request, considering the changes have been updated."}}
 {"id": "doc3000_chunk_70", "text": "変更内容に関する資料を確認してください。", "metadata": {"language": "ja", "translation": "Please review the materials regarding the changes."}}
+{"id": "doc1236_chunk_1", "text": "出荷対象（「注文受付区分」 = 1、「在庫確認区分」 = 1、「出荷準備区分」 = 0）をリスト形式で取得する。", "metadata": {"language": "ja", "translation": "Retrieve all shipping targets (「注文受付区分」 = 1, 「在庫確認区分」 = 1, 「出荷準備区分」 = 0) in list format."}}
+{"id": "doc1237_chunk_1", "text": "②「出庫処理」.倉庫コード", "metadata": {"language": "ja", "translation": "②「出庫処理」.Warehouse code"}}
+{"id": "doc1238_chunk_1", "text": "検品対象（「検品区分」 = 1、「エラー区分」 = 0）を一覧で取得する。", "metadata": {"language": "ja", "translation": "Retrieve all inspection targets (「検品区分」 = 1, 「エラー区分」 = 0) in a list."}}
+{"id": "doc1239_chunk_1", "text": "③「在庫確認」.商品コード", "metadata": {"language": "ja", "translation": "③「在庫確認」.Product code"}}
+{"id": "doc1240_chunk_1", "text": "返品処理対象（「返品区分」 = 1、「処理状況」 = 0）を抽出する。", "metadata": {"language": "ja", "translation": "Extract all return processing targets (「返品区分」 = 1, 「処理状況」 = 0)."}}
+{"id": "doc1241_chunk_1", "text": "④「出荷完了」.伝票番号", "metadata": {"language": "ja", "translation": "④「出荷完了」.Invoice number"}}
+{"id": "doc1242_chunk_1", "text": "配送対象（「配送区分」 = 1、「梱包状況」 = 1）をCSVで出力する。", "metadata": {"language": "ja", "translation": "Export all delivery targets (「配送区分」 = 1, 「梱包状況」 = 1) to CSV."}}
+{"id": "doc1243_chunk_1", "text": "⑤「検品結果」.担当者コード", "metadata": {"language": "ja", "translation": "⑤「検品結果」.Staff code"}}
+{"id": "doc1244_chunk_1", "text": "在庫調整対象（「棚卸区分」 = 1、「差異区分」 = 1）を一覧で表示する。", "metadata": {"language": "ja", "translation": "Display all inventory adjustment targets (「棚卸区分」 = 1, 「差異区分」 = 1) in a list."}}
+{"id": "doc1245_chunk_1", "text": "⑥「返品受付」.受付日", "metadata": {"language": "ja", "translation": "⑥「返品受付」.Reception date"}}
+{"id": "doc1234_chunk_1", "text": "積込検品の対象（「出庫完了区分D = 1、「出荷完了区分」 = 1、「積込検品区分」 = 0）をリスト形式で全て取得する。","metadata":{"language":"ja","translation":"Retrieve all loading inspection targets (「出庫完了区分」 = 1, 「出荷完了区分」 = 1,「積込検品区分」 = 0) in list format."}}
+{"id": "doc1235_chunk_1", "text":"①「積込検品」.物流指定ｺｰﾄﾞ","metadata":{"language":"ja","translation":"①「積込検品」.Logistics designation code"}}

@@ -67,8 +67,8 @@ class Config:
 
     # --- Generation model (GGUF) --- #
     # Dùng cho llama.cpp hoặc ctransformers
-    # MODEL_PATH: str = expand_path(getenv_str("MODEL_PATH", "models/vinallama-7b-chat_q5_0.gguf"))
-    MODEL_PATH: str = expand_path(getenv_str("MODEL_PATH", "models/vicuna-7b-v1.5.Q4_K_S.gguf"))
+    MODEL_PATH: str = expand_path(getenv_str("MODEL_PATH", "models/vinallama-7b-chat_q5_0.gguf"))
+    # MODEL_PATH: str = expand_path(getenv_str("MODEL_PATH", "models/vicuna-7b-v1.5.Q4_K_S.gguf"))
     # MODEL_PATH: str = expand_path(getenv_str("MODEL_PATH", "models/mistral-7b-instruct-v0.1.Q8_0.gguf"))
     
     N_CTX: int = getenv_int("N_CTX", 4096)
@@ -83,10 +83,26 @@ class Config:
 
     # --- Prompt templates --- #
     SYSTEM_PROMPT = (
-        "You are a concise Japanese → English translation expert. \n"
-        "ANY text between 「 and 」 MUST remain unchanged.\n"
-        "ANY text between [ and ] MUST remain unchanged.\n"
-        "Translate each sentence literally and concisely, producing only the exact English equivalent—no additional commentary or extra words."
+        # "You are a concise Japanese → English translation expert. \n"
+        # # "Translate each sentence literally and concisely, producing only the exact English equivalent—no additional commentary or extra words."
+        # "but do NOT translate or alter placeholders like <<<PH_1>>>, <<<PH_2>>>, etc. \n"
+        # "Translate each sentence literally and concisely, producing only the exact English equivalent—\n"
+        # "respond **only** with the translated text, with **no** prefixes (e.g. “Translation:”), markup, or extra words.\n"
+
+        # "You are a Japanese→English translator. Translate literally and concisely into English. "
+        # "Preserve exactly all input characters (digits, punctuation, numbering markers like ①/②, Japanese quotes, and placeholders <<<PH_n>>>). "
+        # "Treat placeholders <<<PH_n>>> as atomic tokens: do NOT translate, alter, split, or duplicate them. "
+        # "Do NOT add, remove, or modify any characters beyond translating Japanese text outside placeholders. "
+        # "Do NOT insert line breaks. Output exactly one line with only the translated sentence. "
+        # "Do NOT add, remove, duplicate, or modify any text beyond translating Japanese outside placeholders. "
+        # "Do NOT insert line breaks. Output exactly one line."
+
+        "You are a Japanese→English translator.  "
+        "Translate literally and concisely into English.  "
+        "**Preserve every single input character exactly**, including digits, punctuation, Japanese quotes 「…」, AND any placeholder tokens of the form `<<<PH_[0-9a-f]+>>>`.  "
+        "**Do NOT** translate, alter, split, duplicate or remove any placeholder token.  "
+        "**Do NOT** add, remove or modify any other characters (spaces, punctuation, line breaks)."  
+        "Output exactly one line—nothing else."
     )
 
     USER_PROMPT_TEMPLATE = getenv_str(
@@ -96,9 +112,7 @@ class Config:
         "{context}\n\n"
         "Original sentence:\n"
         "{query}\n\n"
-        "Please translate the above sentence literally and concisely."
-        # "Do not translate any text inside Japanese quotes like 「this」, nor translate any text inside square brackets (e.g. [this])."
-        # "Do not translate any text inside square brackets like [this], nor translate any text inside Japanese quotes like 「this」."
+        "Please translate the above sentence literally and concisely, and output only the translation."
     )
 
     # Template khi có context
@@ -119,6 +133,9 @@ class Config:
 
     # --- Logging / Misc --- #
     LOG_LEVEL: str = getenv_str("LOG_LEVEL", "INFO")
+
+    OPENAI_MODEL: str = getenv_str("OPENAI_MODEL", "gpt-3.5-turbo")
+    OPENAI_API_KEY: str = getenv_str("OPENAI_API_KEY", "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")
 
     # -------------- Methods -------------- #
     def to_dict(self) -> Dict[str, Any]:

@@ -34,6 +34,8 @@ import numpy as np
 from sentence_transformers import SentenceTransformer
 from ctransformers import AutoModelForCausalLM        #  wrapper gọi LLaMA.cpp model
 from config import Config
+import re
+from typing import Tuple, Dict
 
 # ===================== TIỆN ÍCH ===================== #
 def load_resources(cfg: Config):
@@ -63,7 +65,7 @@ def load_resources(cfg: Config):
        gpu_layers=0,                       # CPU CPU-only (gpu_layers=0) , Nếu có GPU, set gpu_layers=-1 hoặc tăng số layer GPU để chạy nhanh hơn.
        context_length=cfg.N_CTX,           # Nâng cao: Quản lý context dài hơn: tăng cfg.N_CTX (ví dụ up to 4096 hoặc 8192 nếu model hỗ trợ)
        threads=cfg.THREADS,
-   )
+    )
     # llm = AutoModel.from_pretrained(
     #     cfg.MODEL_PATH,            # đường dẫn tới .gguf của bạn
     #     model_type="llama",        # Vicuna xây trên kiến trúc Llama
@@ -137,7 +139,13 @@ def call_ctfm(llm, cfg: Config, context: str, query: str) -> str:
     # kết hợp system + user prompt thành 1 chuỗi
     user_prompt = cfg.USER_PROMPT_TEMPLATE.format(context=context, query=query)
 
-    prompt = f"<<SYS>>{cfg.SYSTEM_PROMPT}<<SYS>>\n{user_prompt}\n"
+    # prompt = f"<<SYS>>{cfg.SYSTEM_PROMPT}<</SYS>>\n{user_prompt}\n"
+    prompt = (
+        "[INST] "
+        f"<<SYS>>\n{cfg.SYSTEM_PROMPT}\n<</SYS>>\n\n"
+        f"{user_prompt}"
+        " [/INST]"
+    )
     print('==================== Prompt ========================')
     print(prompt)
     print("====================================================")
@@ -149,24 +157,101 @@ def call_ctfm(llm, cfg: Config, context: str, query: str) -> str:
     ).strip()
 
 def translate_one(emb, index, metas, llm, cfg: Config, jp: str) -> Tuple[str, str, float]:
+    masked_jp, placeholder_map = mask_placeholders(jp)
+    print("============================= masked_jp, placeholder_map =======================")
+    print(masked_jp)
+    print(placeholder_map)
     # 1. Embed & search
     vec = embed_sentence(emb, jp, normalize=cfg.NORMALIZE_EMB)
+    # vec = embed_sentence(emb, masked_jp, normalize=cfg.NORMALIZE_EMB)
     scores, idxs = search_topk(index, vec, cfg.TOP_K)
     print("============================= Score =======================")
     print(scores)
-    print("===========================================================")
     best_score = scores[0]
 
     # 2. Build context chỉ khi neighbor đầu tiên đủ tốt
     if best_score >= cfg.MIN_SCORE:
-        context = build_context(metas, idxs, scores, jp, cfg)
+        # context = build_context(metas, idxs, scores, jp, cfg)
+        context = build_context(metas, idxs, scores, masked_jp, cfg)
     else:
         context = ""
-    vi = call_ctfm(llm, cfg, context, jp)
+    # vi_masked = call_ctfm(llm, cfg, context, jp)
+    vi_masked = call_ctfm(llm, cfg, context, masked_jp)
+    print("============================= vi_masked, placeholder_map =======================")
+    print(vi_masked)
+    print(placeholder_map)
+    vi = restore_placeholders(vi_masked, placeholder_map)
     return vi, "llama_ctx", float(scores[0])
+
+def mask_placeholders(text: str) -> Tuple[str, Dict[str, str]]:
+    """
+    Replace every Japanese quote block 「...」 with a unique placeholder.
+    Returns masked text and mapping of placeholder to original.
+    """
+    mapping: Dict[str, str] = {}
+    count = 0
+
+    def repl(m: re.Match) -> str:
+        nonlocal count
+        count += 1
+        key = f"<<<PH_{count}>>>"
+        mapping[key] = m.group(0)
+        return key
+
+    masked = re.sub(r'「[^」]+」', repl, text)
+    return masked, mapping
+
+def restore_placeholders(text: str, mapping: Dict[str, str]) -> str:
+    """
+    Restore placeholders in text back to their original Japanese quote blocks.
+    """
+    # for key, val in mapping.items():
+    #     text = text.replace(key, val)
+    # return text
+    for key, val in mapping.items():
+        text = re.sub(re.escape(key), val, text, count=1)
+    return text
 
 def get_device_label(cfg: Config) -> str:
     return "GPU" if getattr(cfg, "gpu_layers", 0) and cfg.gpu_layers > 0 else "CPU"
+
+# def evaluate_bleu(
+#     emb,
+#     index: faiss.Index,
+#     metas: List[dict],
+#     llm,
+#     cfg,
+#     test_data: List[Tuple[str, str]],
+# ) -> float:
+#     """
+#     Compute corpus-level BLEU over a test set.
+#     test_data: List of (jp_sentence, reference_translation).
+#     Returns BLEU score in [0,100].
+#     """
+#     smoothie = SmoothingFunction().method1
+#     references, hypotheses = [], []
+
+#     for jp_sentence, gold_ref in test_data:
+#         # Dịch câu (đã bao gồm tách label segments)
+#         pred = translate_one(emb, index, metas, llm, cfg, jp_sentence)
+
+#         # Tokenize on whitespace
+#         hyp_tokens = pred.strip().split()
+#         ref_tokens = gold_ref.strip().split()
+
+#         hypotheses.append(hyp_tokens)
+#         # BLEU expects list of possible references per hypothesis
+#         references.append([ref_tokens])
+
+#     bleu = corpus_bleu(
+#         references,
+#         hypotheses,
+#         weights=(0.25,0.25,0.25,0.25),
+#         smoothing_function=smoothie
+#     ) * 100.0
+
+#     print(f"\n=== Corpus BLEU score: {bleu:.2f} ===")
+#     return bleu
 
 # ===================== MAIN ===================== #
 def parse_args():
@@ -189,6 +274,7 @@ def main():
     if args.text:
         start_time = time.perf_counter()
         vi, src, score = translate_one(emb, index, metas, llm, cfg, args.text)
+        # vi = translate_mixed(emb, index, metas, llm, cfg, args.text)
         last_time = time.perf_counter() - start_time
         if args.json:
             print(json.dumps({"src": src, "score": score, "jp": args.text, "en": vi}, ensure_ascii=False))
