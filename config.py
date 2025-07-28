@@ -135,7 +135,6 @@ class Config:
     LOG_LEVEL: str = getenv_str("LOG_LEVEL", "INFO")
 
     OPENAI_MODEL: str = getenv_str("OPENAI_MODEL", "gpt-3.5-turbo")
-    OPENAI_API_KEY: str = getenv_str("OPENAI_API_KEY", "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")
 
     # -------------- Methods -------------- #
     def to_dict(self) -> Dict[str, Any]:
