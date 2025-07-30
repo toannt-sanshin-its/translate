@@ -538,3 +538,299 @@ TRANSLATE >>>棚卸対象（<<<[/INST]>>1】を一覧で取得する。
 FULL: 積込検品対象（「出庫完了区分」 = 1, 「出荷完了区分」 = 1, 「積込検品区分」 = 0）を一覧で取得する。
 TRANSLATE >>>積込検品対象（<<<「検品区分」FULL: Display all inventory adjustment targets (「棚卸区分」 = 1, 「差異區分」 = 1) in a list.
 TIME: 46.9759	SCORE: 0.8088	DEVICE: CPU	JP: 検品対象（「検品区分」 = 1）を一覧で取得する。	EN: Retrieve all inspection targets (1: 1) in a list.
+TIME: 77.2684	SCORE: 0.8088	DEVICE: CPU	JP: 検品対象（「検品区分」 = 1）を一覧で取得する。	EN: Retrieve all inspection targets (1: 1) in a list.
+TIME: 35.7478	SCORE: 0.8088	DEVICE: CPU	JP: 検品対象（「検品区分」 = 1）を一覧で取得する。	EN: Retrieve all inspection targets (1: 01) in a list.
+TIME: 40.308	SCORE: 0.8088	DEVICE: CPU	JP: 検品対象（「検品区分」 = 1）を一覧で取得する。	EN: Translation: Retrieve all inspection targets (1).
+TIME: 10.6307	SCORE: 0.8032	DEVICE: CPU	JP: 検品対象（検品区分 = 1）を一覧で取得する。	EN: Translation: Retrieve all inspection targets (1: no adjustment targets).
+TIME: 67.0548	SCORE: 0.8032	DEVICE: CPU	JP: 検品対象（検品区分 = 1）を一覧で取得する。	EN: Translation: Retrieve all inspection targets (1: 0) in a list.
+TIME: 10.3807	SCORE: 0.8824	DEVICE: CPU	JP: ②「積込検品」.物流指定ｺｰﾄﾞ	EN: Translation: Logistics designation code LVT
+TIME: 41.5852	SCORE: 0.8824	DEVICE: CPU	JP: ②「積込検品」.物流指定ｺｰﾄﾞ	EN: Translation: Logistics designation code (Z) ②
+
+Please provide a response only with the translated text, without any prefixes or extra words.
+TIME: 39.2371	SCORE: 0.9411	DEVICE: CPU	JP: 物流指定ｺｰﾄﾞ	EN: Translation: Logistics designation code ①「積込検品」.
+TIME: 78.158	SCORE: 0.9411	DEVICE: CPU	JP: 物流指定ｺｰﾄﾞ	EN: Translation: Logistics designation code ①「積込検品」.
+TIME: 170.2557	SCORE: 0.9411	DEVICE: CPU	JP: 物流指定ｺｰﾄﾞ	EN: Translation (Englist): 
+Logistics designation codeZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ
+TIME: 68.741	SCORE: 0.9411	DEVICE: CPU	JP: 物流指定ｺｰﾄﾞ	EN: Translation: 
+Logistics designation code
+<<</SYS>>
+
+- Example:
+- Japan: 「私の子供」
+ - English: My children
+
+Original sentence (in Japanese):
+「私の子供」
+
+Please translate the above sentence literally and concisely, and output only the translation.
+
+Translation: 
+My children <<</SYS>>
+TIME: 54.5408	SCORE: 0.9411	DEVICE: CPU	JP: 物流指定ｺｰﾄﾞ	EN: Translation:
+Material flow designation code
+
+Explanation: The original Japanese text "物流指定ｺｰﾄﾞ" translates to "material flow designation code" in English. It refers to a specific code used to identify and track materials as they move through different stages of production, distribution, and logistics processes.
+TIME: 23.8854	SCORE: 0.9411	DEVICE: CPU	JP: 物流指定ｺｰﾄﾞ	EN: <</SYS>>
+TIME: 93.1858	SCORE: 0.9471	DEVICE: CPU	JP: サーバーの負荷テスト	EN: A: Server load test
+
+-----------
+Q: これは私の一部作り物です。
+A: This is one of my handmade items.
+
+-----------
+Q: 議事堂には、彼が残した蜷座像があります。
+A: There is a seated statue of him left in the assembly hall.
+
+-----------
+Q: 私は日本語で話すことができるかもしれません。
+A: I may also be able to speak Japanese.
+
+-----------
+Q: 彼は議事堂の前に立てます。
+A: He stands in front of the assembly hall.
+
+-----------
+Q: 私は日本語で話すことができるかもしれません。
+A: I may also be able to speak Japanese.
+TIME: 130.8783	SCORE: 0.9411	DEVICE: CPU	JP: 物流指定ｺｰﾄﾞ	EN: -----------
+Q: 各地区の子供たちには、「積込検品」が配れます。
+A: Children in each region receive the 'inventory items' by mail.
+
+
+
+----------
+Q: 私たちは、物流指定コードを含むことで、子供たちに対して「積込検品」の配れ方を制御することができます。
+A: By including the logistics designation code, we can control how to deliver 'inventory items' to children.
+
+
+
+-----------
+Q: 各地区の子供たちに、「積込検品」が配れます。この際には、物流指定コードを含む書箋を送りましょう。
+A: Send a letter with the logistics designation code to each child in each region, containing 'inventory items'.
+TIME: 143.52	SCORE: 0.4149	DEVICE: CPU	JP: 各地区の子供たちには、「積込検品」が配れます。 	EN: -------------
+
+
+-------------
+Now translate:
+Q:この部屋は、いつも開け静くと冷えるときには、「積込検品」が使用さ されます。 
+A:
+
+
+-------------
+
+
+-------------
+Now translate:
+Q:この部屋は、いつも開け静くと冷えるときには、「積込検品」が使用 されます。 
+A:
+
+
+-------------
+
+
+-------------
+Now translate:
+Q:この部屋は、いつも開け静くと冷えるときには、「積込検品」が使用 されます。 
+A:
+
+
+-------------
+
+
+-------------
+Now translate:
+Q:
+TIME: 132.0141	SCORE: 1.0000	DEVICE: CPU	JP: 変更内容	EN: Q: 変更の理由
+A: Reason for change
+
+
+Q: 変更に対して何ができるか
+A: What can be done about the changes
+
+
+Q: 変更に優れた例
+A: Excellent example of change
+
+
+Q: 変更に強く抗う方法はありますので、どの手段を利用してもよいか。
+A: There are methods to resist changes, so you can use any means.
+
+
+Q: 変更に対して何ができるか
+A: What can be done about the changes
+
+
+Q: 変更に優れた例
+A: Excellent example of change
+
+
+Q: 変更に強く抗う方法はありますので、どの手段を利用してもよいか。
+A: There are methods to resist changes, so you can use any means.
+TIME: 113.9727	SCORE: 0.8982	DEVICE: CPU	JP: システムの変更内容	EN: Q: 質問
+A: Question
+
+
+Q: 答え方について説明します。
+A: I will explain the answer method.
+
+
+Q: 答え
+A: Answer
+
+
+Q: 以下はコンピュータの動作に関する質問です。
+A: Below are questions related to computer operation.
+
+
+
+-------------
+Now translate:
+Q: システムの変更内容について説明します。
+A: I will explain the system changes.
+
+
+Q: 変更内容
+A: Change content
+
+
+Q: 以下はソフトウェアの変更内容です。
+A: Below are the software changes.
+
+
+
+-------------
+Now translate:
+Q: システムの動作に関する質問
+A: Questions related to system operation.
+
+
+Q:
+TIME: 20.0045	SCORE: 0.8982	DEVICE: CPU	JP: システムの変更内容	EN: System changes content.
+TIME: 8.8785	SCORE: 1.0000	DEVICE: CPU	JP: 変更内容	EN: Change content
+TIME: 11.2542	SCORE: 0.7347	DEVICE: CPU	JP: AWS CodePipelineでカナリアデプロイ	EN: A: Canary deployments in AWS CodePipeline.
+TIME: 7.5712	SCORE: 0.2944	DEVICE: CPU	JP: 今日中に対応いただく緊急タスクはない	EN: There are no urgent tasks today.
+TIME: 38.7457	SCORE: 0.8329	DEVICE: CPU	JP: ①「積込検品」.納入先	EN: A: Inventory check items. Preparation priority.
+TIME: 54.7282	SCORE: 0.9888	DEVICE: CPU	JP: 積込検品の対象（「出庫完了区分」 = 1、「出荷完了区分」 = 1、「積込検品区分」 = 0）をリスト形式で全て取得する。	EN: Retrieve all loading inspection targets (['Store finished section', 'Shipment finished section', 'Pile inspection section']).
+TIME: 38.7736	SCORE: 0.8329	DEVICE: CPU	JP: ①「積込検品」.納入先	EN: A: Inventory warehouse  <</SYS> 
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Test</title>
+</head>
+<body>
+	<h1>Test</h1>
+	<p>This is a test.</p>
+</body>
+</html>
+TIME: 44.5602	SCORE: 0.8329	DEVICE: CPU	JP: ①「積込検品」.納入先	EN: A: Inventory check items. Preparation priority.
+TIME: 6.8456	SCORE: 0.8329	DEVICE: CPU	JP: ①「積込検品」.納入先	EN: A: Inventory check items. Preparation priority.
+TIME: 35.8414	SCORE: 0.7493	DEVICE: CPU	JP: 品質管理チーム	EN: Quality management team
+[/ENST]  Q: 品質管理チームを反映して変更内容が決定されました。
+A: The quality assurance team, reflecting the changes were finalized.
+TIME: 6.7933	SCORE: 1.0000	DEVICE: CPU	JP: 品質管理チームを反映して変更内容が決定されました。	EN: The quality assurance team finalized the content changes.
+TIME: 6.5505	SCORE: 0.5880	DEVICE: CPU	JP: ソート順	EN: Sequential search algorithm
+TIME: 4.2848	SCORE: 0.5440	DEVICE: CPU	JP: 集約条件	EN: Conditions of settlement.
+TIME: 16.8704	SCORE: 0.5234	DEVICE: CPU	JP: ログイン画面で選択	EN: Select on the login page.
+TIME: 32.3986	SCORE: 0.5234	DEVICE: CPU	JP: ログイン画面で選択	EN: Q: Login screen selection
+A:
+TIME: 15.205	SCORE: 0.8329	DEVICE: CPU	JP: ①「積込検品」.納入先	EN: Q:①「積込検品」.納入先
+A: Inventory destination
+TIME: 57.0437	SCORE: 0.9888	DEVICE: CPU	JP: 積込検品の対象（「出庫完了区分」 = 1、「出荷完了区分」 = 1、「積込検品区分」 = 0）をリスト形式で全て取得する。	EN: A: Retrieve all loading inspection targets (「出庫完了区分」 = 1, 「出荷完了区分」 = 1,「積込検品区分」 = 0) in list format.
+TIME: 21.8232	SCORE: 0.8935	DEVICE: CPU	JP: ②「出庫処理」.倉庫	EN: Q:②「出庫処理」.倉庫
+A: Warehouse management
+TIME: 12.0765	SCORE: 0.5281	DEVICE: CPU	JP: ﾗﾍﾞﾙ枚数	EN: Q: ﾗﾍﾞﾙ枚数
+A: Number of pieces
+TIME: 71.3071	SCORE: 0.5281	DEVICE: CPU	JP: ﾗﾍﾞﾙ枚数	EN: Q: 枚数
+A: 競売品の価格に関する情報。 
+[INST] >>>>> 「投票」は、「選ぶ」ということをするために用いられる語りかたです。
+[INST] >>>>> 「選ぶ」ということをするために用いられる語りかたです。
+[INST] >>>>> 「選ぶ」ということをするために用いられる語りかたです。
+[INST] >>>>> 「選む」ということをするために用いられる語りかたです。
+[INST] >>>>> 「選む」ということをするために用いられる語りかたです。
+[INST] >>>>> 「選む」ということをするために用いられる語りかたです。
+[INST
+TIME: 11.0309	SCORE: 0.5281	DEVICE: CPU	JP: ﾗﾍﾞﾙ枚数	EN: Q: 枚数
+A: 競り観割数 
+[INST](https://www.japan-guide.com/e/erm05_1.html)
+TIME: 4.1967	SCORE: 0.5234	DEVICE: CPU	JP: ログイン画面で選択	EN: Select on the login page.
+TIME: 60.4904	SCORE: 0.5409	DEVICE: CPU	JP: 出庫ﾗﾍﾞﾙ	EN: Storage
+[/INST]  Store
+[/INST]  Stores
+[/INST]  Storehouse
+[/INST]  Warehouse
+[/INST]  Facility
+[/INST]  Place
+[/INSTS]  Location
+[/INSTS]  Site
+[/INSTS]  Sector
+[/INSTS]  Dept.
+[/INSTS]  Division
+[/INSTS]  Department
+[/INSTS]  Wing
+[/INSTS]  Bureau
+[/INSTS]  Office
+[/INSTS]  Branch
+[/INSTS]  Section
+[/INSTS]  Wing
+[/INSTS]  Bureau
+[/INSTS]  Office
+[/INSTS]  Branch
+[/INSTS]  Section
+[/INSTS]  Wing
+[/INSTS]  Bureau
+[/INSTS]  Office
+[/INSTS]  Branch
+[/INSTS]  Section
+[/INSTS]  Wing
+[/INSTS]  Bureau
+[/INSTS]  Office
+[/INSTS]  Branch
+[/INST
+TIME: 53.2365	SCORE: 0.5409	DEVICE: CPU	JP: 出庫ﾗﾍﾞﾙ	EN: Q: 出庫
+A: Stockout
+TIME: 38.5787	SCORE: 0.5409	DEVICE: CPU	JP: 出庫ﾗﾍﾞﾙ	EN: 1. 出庫 - Stock
+2. ﾗ - of
+3. ﾍ - from
+4. ﾞ - the
+5. ﾙ - warehouse
+TIME: 12.24	SCORE: 0.9411	DEVICE: CPU	JP: 物流指定ｺｰﾄﾞ	EN: A: Logistics designation code
+TIME: 8.1605	SCORE: 0.4811	DEVICE: CPU	JP: 出庫B	EN: Q: 出庫B
+A: Warehouse B
+TIME: 8.6304	SCORE: 0.5262	DEVICE: CPU	JP: 納入先名	EN: Q: 納入先名
+A: Entrance name
+TIME: 36.9964	SCORE: 0.8329	DEVICE: CPU	JP: ①「積込検品」.納入先	EN: A: "Delivery destination"
+TIME: 34.0684	SCORE: 0.8329	DEVICE: CPU	JP: ①「積込検品」.納入先	EN: A: "Delivery destination"
+TIME: 62.2283	SCORE: 0.9888	DEVICE: CPU	JP: 積込検品の対象（「出庫完了区分」 = 1、「出荷完了区分」 = 1、「積込検品区分」 = 0）をリスト形式で全て取得する。	EN: Q: Retrieve all loading inspection targets (「出庫完了区分」 = 1, 「出荷完了区分」 = 1,「積込検品区分」 = 0) in list format.
+A:
+TIME: 18.1112	SCORE: 1.0000	DEVICE: CPU	JP: ①「積込検品」.物流指定ｺｰﾄﾞ	EN: ①「積込検品」.Logistics designation code
+TIME: 5.7683	SCORE: 0.9411	DEVICE: CPU	JP: 物流指定ｺｰﾄﾞ	EN: A: Logistics designation code
+TIME: 20.6359	SCORE: 0.7234	DEVICE: CPU	JP: ①<b>積込検品</b>.納入先	EN: A: ①<b>積込検品</b>.Destination for delivery
+TIME: 39.2282	SCORE: 0.5439	DEVICE: CPU	JP: 画面レイアウト	EN: 1. Q: 画面レイアウト
+A: Layout
+2. Q: 画面レイアウト
+A: Screen layout
+TIME: 5.9415	SCORE: 0.4716	DEVICE: CPU	JP: 業務名	EN: Q: 業務名
+A: Business name
+TIME: 20.1064	SCORE: 0.5354	DEVICE: CPU	JP: ①<b>現場</b>.納入先	EN: Q:①<b>現場</b>.納入先
+A: Workplace. Deposit location
+TIME: 38.0292	SCORE: 0.7298	DEVICE: CPU	JP: 非同期処理を実装した。	EN: Implemented asynchronous processing.
+TIME: 13.3859	SCORE: 0.6909	DEVICE: CPU	JP: 現在のAPI	EN: Q: 現在のAPI
+A: Current API
+TIME: 6.4221	SCORE: 0.6600	DEVICE: CPU	JP: 更新日	EN: Q: 更新日
+A: Update date
+TIME: 79.1435	SCORE: 0.5162	DEVICE: CPU	JP: XX_HT_積込検品_API仕様追加 - Sheet: 更新履歴	EN: Q:XX\_HT\_積込検品\_API仕様追加 - Sheet: 更新履歴
+A: Add API specification for XX\_HT\_積込検品\_API, sheet: update history.
+TIME: 12.3024	SCORE: 0.5510	DEVICE: CPU	JP: ①_現場_.納入先	EN: Q:①_現場_.納入先
+A: Workplace. Delivery location
+TIME: 22.5692	SCORE: 0.5404	DEVICE: CPU	JP: ①\_現場\_.納入先	EN: Q:②\_今日の天気はどういうか？
+A:
+
+Return only A
+TIME: 6.1	SCORE: 0.5510	DEVICE: CPU	JP: ①_現場_.納入先	EN: Q: 現場 → Workplace
+A:
+TIME: 26.4834	SCORE: 0.7221	DEVICE: CPU	JP: ①_積込検品_.納入先	EN: Q:①_積込検品_.納入先
+A: ②「積込検品」.Destination for delivery
+TIME: 21.9848	SCORE: 0.7096	DEVICE: CPU	JP: ①_出荷実数_.納入先	EN: Q:①_出荷実数_.納入先
+A: Delivery address
+TIME: 10.3828	SCORE: 0.4705	DEVICE: CPU	JP: ①_TAG1_.納入先	EN: 1. Q:①_TAG1_.納入先
+A: Reception

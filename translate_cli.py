@@ -115,6 +115,9 @@ def build_context(metas, idxs, scores, jp, cfg: Config) -> str:
 
         # 2. Lấy bản dịch mẫu (VI)
         m      = metas[idx]
+        print('===============metas[idx]================')
+        print(metas[idx])
+        jp_ex = safe_get(m, "text")
         vi_ex  = safe_get(m, "translation") \
                or safe_get(m, "metadata", "translation")
         if not vi_ex:
@@ -126,7 +129,8 @@ def build_context(metas, idxs, scores, jp, cfg: Config) -> str:
         seen_vi.add(vi_ex)
 
         # 4. Thêm vào chunks
-        chunks.append(f"- Example: {vi_ex}")
+        # chunks.append(f"- Example: {vi_ex}")
+        chunks.append(f"Q: {jp_ex}\nA: {vi_ex}\n\n")
 
         # # 5. Giới hạn số ví dụ
         # if len(chunks) >= getattr(cfg, "CONTEXT_EXAMPLES", 2):
@@ -140,6 +144,7 @@ def call_ctfm(llm, cfg: Config, context: str, query: str) -> str:
     user_prompt = cfg.USER_PROMPT_TEMPLATE.format(context=context, query=query)
 
     # prompt = f"<<SYS>>{cfg.SYSTEM_PROMPT}<</SYS>>\n{user_prompt}\n"
+    # prompt = f"{cfg.SYSTEM_PROMPT}\n{user_prompt}\n"
     prompt = (
         "[INST] "
         f"<<SYS>>\n{cfg.SYSTEM_PROMPT}\n<</SYS>>\n\n"
@@ -157,13 +162,8 @@ def call_ctfm(llm, cfg: Config, context: str, query: str) -> str:
     ).strip()
 
 def translate_one(emb, index, metas, llm, cfg: Config, jp: str) -> Tuple[str, str, float]:
-    masked_jp, placeholder_map = mask_placeholders(jp)
-    print("============================= masked_jp, placeholder_map =======================")
-    print(masked_jp)
-    print(placeholder_map)
     # 1. Embed & search
     vec = embed_sentence(emb, jp, normalize=cfg.NORMALIZE_EMB)
-    # vec = embed_sentence(emb, masked_jp, normalize=cfg.NORMALIZE_EMB)
     scores, idxs = search_topk(index, vec, cfg.TOP_K)
     print("============================= Score =======================")
     print(scores)
@@ -171,46 +171,11 @@ def translate_one(emb, index, metas, llm, cfg: Config, jp: str) -> Tuple[str, st
 
     # 2. Build context chỉ khi neighbor đầu tiên đủ tốt
     if best_score >= cfg.MIN_SCORE:
-        # context = build_context(metas, idxs, scores, jp, cfg)
-        context = build_context(metas, idxs, scores, masked_jp, cfg)
+        context = build_context(metas, idxs, scores, jp, cfg)
     else:
         context = ""
-    # vi_masked = call_ctfm(llm, cfg, context, jp)
-    vi_masked = call_ctfm(llm, cfg, context, masked_jp)
-    print("============================= vi_masked, placeholder_map =======================")
-    print(vi_masked)
-    print(placeholder_map)
-    vi = restore_placeholders(vi_masked, placeholder_map)
+    vi = call_ctfm(llm, cfg, context, jp)
     return vi, "llama_ctx", float(scores[0])
-
-def mask_placeholders(text: str) -> Tuple[str, Dict[str, str]]:
-    """
-    Replace every Japanese quote block 「...」 with a unique placeholder.
-    Returns masked text and mapping of placeholder to original.
-    """
-    mapping: Dict[str, str] = {}
-    count = 0
-
-    def repl(m: re.Match) -> str:
-        nonlocal count
-        count += 1
-        key = f"<<<PH_{count}>>>"
-        mapping[key] = m.group(0)
-        return key
-
-    masked = re.sub(r'「[^」]+」', repl, text)
-    return masked, mapping
-
-def restore_placeholders(text: str, mapping: Dict[str, str]) -> str:
-    """
-    Restore placeholders in text back to their original Japanese quote blocks.
-    """
-    # for key, val in mapping.items():
-    #     text = text.replace(key, val)
-    # return text
-    for key, val in mapping.items():
-        text = re.sub(re.escape(key), val, text, count=1)
-    return text
 
 def get_device_label(cfg: Config) -> str:
     return "GPU" if getattr(cfg, "gpu_layers", 0) and cfg.gpu_layers > 0 else "CPU"

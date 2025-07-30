@@ -15,12 +15,17 @@ Chạy:
     python build_index.py data/ja_vi.jsonl indexes/
 """
 
-import argparse, json, pathlib, pickle, os
+import argparse
+import json
+import pathlib
+import pickle
+import os
 import numpy as np
+import hashlib
 import faiss
 from sentence_transformers import SentenceTransformer
 from transformers import AutoTokenizer
-from langchain.text_splitter import CharacterTextSplitter, RecursiveCharacterTextSplitter
+from langchain.text_splitter import RecursiveCharacterTextSplitter
 
 # --- 1. Đọc tham số CLI ---
 def parse_args():
@@ -39,6 +44,26 @@ def parse_args():
     )
     return parser.parse_args()
 
+# --- 2. Hash fingerprint để dedup text ---
+def fingerprint(text: str) -> str:
+    return hashlib.md5(text.encode('utf-8')).hexdigest()
+
+# --- 3. Load data và chunking ---
+def load_and_chunk(jsonl_path, splitter):
+    texts, metas = [], []
+    for obj in load_jsonl(jsonl_path):
+        if obj.get("metadata", {}).get("language") != "ja":
+            continue
+        chunks = splitter.split_text(obj["text"])
+        for idx, txt in enumerate(chunks):
+            texts.append(txt)
+            metas.append({
+                "id": f"{obj['id']}_chunk{idx}",
+                "text": txt,
+                "translation": obj["metadata"].get("translation", ""),
+            })
+    return texts, metas
+
 def load_jsonl(path):
     with open(path, encoding="utf-8") as f:
         for line in f:
@@ -56,14 +81,6 @@ def main():
         os.getenv("EMB_MODEL", "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"),
         use_fast=True
     ) # Chia chuỗi text thành token IDs rồi ngược lại từ IDs thành text.
-
-    # --- Thiết lập Text Splitter ---
-    # text_splitter = CharacterTextSplitter(
-    #     chunk_size=args.max_tokens,
-    #     chunk_overlap=args.stride,
-    #     length_function=lambda x: len(hf_tokenizer.encode(x)),
-    #     separator=["。", "！", "？", "\n\n"]
-    # )
 
     # Tạo Recursive splitter
     text_splitter = RecursiveCharacterTextSplitter(

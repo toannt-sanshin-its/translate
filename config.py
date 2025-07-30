@@ -67,9 +67,9 @@ class Config:
 
     # --- Generation model (GGUF) --- #
     # Dùng cho llama.cpp hoặc ctransformers
-    MODEL_PATH: str = expand_path(getenv_str("MODEL_PATH", "models/vinallama-7b-chat_q5_0.gguf"))
+    # MODEL_PATH: str = expand_path(getenv_str("MODEL_PATH", "models/vinallama-7b-chat_q5_0.gguf"))
     # MODEL_PATH: str = expand_path(getenv_str("MODEL_PATH", "models/vicuna-7b-v1.5.Q4_K_S.gguf"))
-    # MODEL_PATH: str = expand_path(getenv_str("MODEL_PATH", "models/mistral-7b-instruct-v0.1.Q8_0.gguf"))
+    MODEL_PATH: str = expand_path(getenv_str("MODEL_PATH", "models/mistral-7b-instruct-v0.1.Q8_0.gguf"))
     
     N_CTX: int = getenv_int("N_CTX", 4096)
 
@@ -83,36 +83,29 @@ class Config:
 
     # --- Prompt templates --- #
     SYSTEM_PROMPT = (
-        # "You are a concise Japanese → English translation expert. \n"
-        # # "Translate each sentence literally and concisely, producing only the exact English equivalent—no additional commentary or extra words."
-        # "but do NOT translate or alter placeholders like <<<PH_1>>>, <<<PH_2>>>, etc. \n"
-        # "Translate each sentence literally and concisely, producing only the exact English equivalent—\n"
-        # "respond **only** with the translated text, with **no** prefixes (e.g. “Translation:”), markup, or extra words.\n"
-
-        # "You are a Japanese→English translator. Translate literally and concisely into English. "
-        # "Preserve exactly all input characters (digits, punctuation, numbering markers like ①/②, Japanese quotes, and placeholders <<<PH_n>>>). "
-        # "Treat placeholders <<<PH_n>>> as atomic tokens: do NOT translate, alter, split, or duplicate them. "
-        # "Do NOT add, remove, or modify any characters beyond translating Japanese text outside placeholders. "
-        # "Do NOT insert line breaks. Output exactly one line with only the translated sentence. "
-        # "Do NOT add, remove, duplicate, or modify any text beyond translating Japanese outside placeholders. "
-        # "Do NOT insert line breaks. Output exactly one line."
-
-        "You are a Japanese→English translator.  "
-        "Translate literally and concisely into English.  "
-        "**Preserve every single input character exactly**, including digits, punctuation, Japanese quotes 「…」, AND any placeholder tokens of the form `<<<PH_[0-9a-f]+>>>`.  "
-        "**Do NOT** translate, alter, split, duplicate or remove any placeholder token.  "
-        "**Do NOT** add, remove or modify any other characters (spaces, punctuation, line breaks)."  
-        "Output exactly one line—nothing else."
+        "You are a concise Japanese → English translation expert. \n"
+        # "Translate each sentence literally and concisely, producing only the exact English equivalent—no additional commentary or extra words."
+        # "Translate each Japanese phrase or sentence literally and concisely.\n"
+        # "Respond **only** with the exact English equivalent—no prefixes, no markup, no extra words, no explanations."
+        # "ANY text between 「 and 」 MUST remain unchanged.\n"
+        # "ANY text between [ and ] MUST remain unchanged.\n"
+        "Translate literally and concisely. \nRespond only with the exact English equivalent—no prefixes, no markup, no extra words, no explanations."
     )
 
     USER_PROMPT_TEMPLATE = getenv_str(
         "USER_PROMPT_TEMPLATE",
         # Đổi nhãn để nhấn mạnh đây chỉ là ví dụ style, không phải nội dung cần copy:
         "Relevant examples (style only):\n"
+        # "- Example:\n"
         "{context}\n\n"
-        "Original sentence:\n"
-        "{query}\n\n"
-        "Please translate the above sentence literally and concisely, and output only the translation."
+        "-------------\n"
+        # "Original sentence:\n"
+        "Now translate literally and concisely:\n"
+        "Q:{query}\n"
+        "A:\n\n"
+        "Return only A\n"
+        "-------------\n"
+        # "Aim for accuracy and clarity in your response"
     )
 
     # Template khi có context
