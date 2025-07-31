@@ -11,6 +11,7 @@ import pickle
 import os
 import faiss
 from helper import fingerprint, load_jsonl, should_add, make_embedding_tools
+import re
 
 # --- CLI ---
 def parse_args():
@@ -26,9 +27,11 @@ def parse_args():
     return parser.parse_args()
 
 # --- Load data và chunking ---
-def load_and_chunk(jsonl_path, splitter, seen_fps=None):
+def load_and_chunk(jsonl_path, splitter, seen_fps=None, start_doc: int = 1):
     texts, metas = [], []
     dedup = seen_fps is not None
+    current_doc = start_doc
+
     for obj in load_jsonl(jsonl_path):
         if obj.get("metadata", {}).get("language") != "ja":
             continue
@@ -39,12 +42,37 @@ def load_and_chunk(jsonl_path, splitter, seen_fps=None):
                     continue
             texts.append(txt)
             metas.append({
-                "id": f"doc{obj['id']}_chunk{idx}",
+                # "id": f"doc{obj['id']}_chunk{idx}",
+                "id": f"{current_doc}_{idx}",
                 "text": txt,
                 "translation": obj["metadata"].get("translation", ""),
                 "type": obj["metadata"].get("type", ""),
             })
-    return texts, metas
+        current_doc += 1
+
+    return texts, metas  
+
+def parse_doc_number_from_id(id_str: str) -> int:
+    """
+    Summary: Lấy số doc từ id kiểu '1235_1'. Trả về 0 nếu không parse được.
+    """
+    # Hỗ trợ cả hai format: '1235_1' và 'doc1235_chunk_1'
+    m = re.match(r'^(\d+)_', id_str)
+    if m:
+        return int(m.group(1))
+    return 0
+
+def max_existing_doc_number(metas) -> int:
+    """
+    Summary: Duyệt metas, tìm doc number lớn nhất từ id và trả lại.
+    """
+    max_n = 0
+    for m in metas:
+        id_str = m.get("id", "")
+        n = parse_doc_number_from_id(id_str)
+        if n > max_n:
+            max_n = n
+    return max_n
 
 # --- 1. Build mới (no dedup) ---
 def init_index(jsonl_path: str, index_dir: pathlib.Path, max_tokens: int, stride: int):
@@ -52,6 +80,9 @@ def init_index(jsonl_path: str, index_dir: pathlib.Path, max_tokens: int, stride
     idx_path = index_dir / 'faiss.index'
     meta_path = index_dir / 'meta.pkl'
     fps_path = index_dir / 'seen_fps.pkl'
+
+    # Tính doc số bắt đầu: lấy max hiện có rồi +1
+    start_doc = 1
 
     # --- Thiết lập model & tokenizer ---
     model_name = os.getenv("EMB_MODEL", "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2")
@@ -63,7 +94,7 @@ def init_index(jsonl_path: str, index_dir: pathlib.Path, max_tokens: int, stride
 
     # Read & chunk
     print("📥 Đọc & chunk dữ liệu... sử dụng RecursiveCharacterTextSplitter")
-    texts, metas = load_and_chunk(jsonl_path, text_splitter, seen_fps=None)
+    texts, metas = load_and_chunk(jsonl_path, text_splitter, seen_fps=None, start_doc=start_doc)
     # --- Encode vectors ---
     print("⚙️ Encoding vectors...")
     vecs = emb_model.encode(
@@ -96,6 +127,10 @@ def extend_index(jsonl_path: str, index_dir: pathlib.Path, max_tokens: int, stri
     meta_path = index_dir / 'meta.pkl'
     fps_path = index_dir / 'seen_fps.pkl'
 
+    # Tính doc số bắt đầu: lấy max hiện có rồi +1
+    current_max_doc = max_existing_doc_number(metas)
+    start_doc = current_max_doc + 1
+
     # Load previous state
     index = faiss.read_index(str(idx_path))
     metas = pickle.load(meta_path.open('rb'))
@@ -111,7 +146,7 @@ def extend_index(jsonl_path: str, index_dir: pathlib.Path, max_tokens: int, stri
 
     # Process new file
     print("📥 Đọc & chunk dữ liệu... sử dụng RecursiveCharacterTextSplitter")
-    new_texts, new_metas = load_and_chunk(jsonl_path, text_splitter, seen_fps)
+    new_texts, new_metas = load_and_chunk(jsonl_path, text_splitter, seen_fps, start_doc=start_doc)
     # Batch encode & add
     new_count = len(new_texts)
     if new_count:

@@ -858,3 +858,7 @@ TIME: 0.0003	SCORE: 1.0000	DEVICE: CPU	JP: 画面イメージ（HT_積込検品�
 TIME: 41.9706	SCORE: 1.0000	DEVICE: CPU	JP: 文言（便番号→物流指定コード）を修正	EN: Modified wording (Bin Number → Logistics Specification Code)
 TIME: 6.8265	SCORE: 0.7213	DEVICE: CPU	JP: 文言	EN: Q: 文言
 A: Language
+TIME: 28.1032	SCORE: 0.7213	DEVICE: CPU	JP: 文言	EN: Q: 文言
+A: Language
+TIME: 20.1565	SCORE: 0.7213	DEVICE: CPU	JP: 文言	EN: Q: 文言
+A: Language
