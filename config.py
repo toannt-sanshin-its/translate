@@ -108,22 +108,6 @@ class Config:
         # "Aim for accuracy and clarity in your response"
     )
 
-    # Template khi có context
-    TEMPLATE_WITH_CTX: str = getenv_str(
-        "USER_PROMPT_TEMPLATE",
-        "Relevant examples (style only):\n"
-        "{context}\n\n"
-        "Original sentence:\n{query}\n\n"
-        "Please translate the above sentence literally and concisely."
-    )
-
-    # Template khi context trống
-    TEMPLATE_NO_CTX: str = getenv_str(
-        "USER_PROMPT_TEMPLATE",
-        "Original sentence:\n{query}\n\n"
-        "Translate _only_ this sentence into English."
-    )
-
     # --- Logging / Misc --- #
     LOG_LEVEL: str = getenv_str("LOG_LEVEL", "INFO")
 
@@ -153,7 +137,4 @@ class Config:
                 print(msg)
 
 # ----------------- Global singleton (optional) ----------------- #
-# Bạn có thể dùng trực tiếp:
-#   from config import CFG
-#   ... rồi CFG.validate()
 CFG = Config()

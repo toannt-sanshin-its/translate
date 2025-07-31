@@ -834,3 +834,27 @@ TIME: 21.9848	SCORE: 0.7096	DEVICE: CPU	JP: ①_出荷実数_.納入先	EN: Q:�
 A: Delivery address
 TIME: 10.3828	SCORE: 0.4705	DEVICE: CPU	JP: ①_TAG1_.納入先	EN: 1. Q:①_TAG1_.納入先
 A: Reception
+TIME: 37.3469	SCORE: 0.8981	DEVICE: CPU	JP: コードの静的解析ツール	EN: Static code analysis tool
+TIME: 30.481	SCORE: 0.8981	DEVICE: CPU	JP: コードの静的解析ツール	EN: Static code analysis tool
+TIME: 40.0893	SCORE: 0.8981	DEVICE: CPU	JP: コードの静的解析ツール	EN: A: Static code analysis tool
+TIME: 36.2137	SCORE: 0.8981	DEVICE: CPU	JP: コードの静的解析ツール	EN: Static code analysis tool
+TIME: 30.0889	SCORE: 0.8981	DEVICE: CPU	JP: コードの静的解析ツール	EN: Static code analysis tool
+TIME: 5.0202	SCORE: 0.6031	DEVICE: CPU	JP: 相談機能を実装するため	EN: Implement conversation functionality.
+TIME: 21.8672	SCORE: 0.6031	DEVICE: CPU	JP: 相談機能を実装するため	EN: Implement conversation functionality
+TIME: 23.4044	SCORE: 0.5340	DEVICE: CPU	JP: 相談機能を実装するため	EN: Implement conversation functionality.
+TIME: 6.7694	SCORE: 1.0000	DEVICE: CPU	JP: 更新日	EN: A: Update Date
+TIME: 7.697	SCORE: 1.0000	DEVICE: CPU	JP: 小園	EN: Q: 小園
+A: Garden
+TIME: 30.7095	SCORE: 1.0000	DEVICE: CPU	JP: 小園	EN: Q: 小園
+A: Garden
+TIME: 0.0001	SCORE: 1.0000	DEVICE: CPU	JP: 小園	EN: 小園
+TIME: 0.0003	SCORE: 1.0000	DEVICE: CPU	JP: 小園	EN: 小園
+TIME: 0.0003	SCORE: 1.0000	DEVICE: CPU	JP: 小園	EN: 小園
+TIME: 0.0003	SCORE: 1.0000	DEVICE: CPU	JP: API仕様書	EN: API仕様書
+TIME: 25.1595	SCORE: 1.0000	DEVICE: CPU	JP: 文言（便番号→物流指定コード）を修正	EN: A: Modified wording (Bin Number → Logistics Specification Code)
+TIME: 0.0006	SCORE: 1.0000	DEVICE: CPU	JP: 画面転送仕様（HT_積込検品）	EN: 画面転送仕様（HT_積込検品）
+TIME: 0.0002	SCORE: 1.0000	DEVICE: CPU	JP: 画面転送仕様（HT_積込検品）	EN: 画面転送仕様（HT_積込検品）
+TIME: 0.0003	SCORE: 1.0000	DEVICE: CPU	JP: 画面イメージ（HT_積込検品）	EN: 画面イメージ（HT_積込検品）
+TIME: 41.9706	SCORE: 1.0000	DEVICE: CPU	JP: 文言（便番号→物流指定コード）を修正	EN: Modified wording (Bin Number → Logistics Specification Code)
+TIME: 6.8265	SCORE: 0.7213	DEVICE: CPU	JP: 文言	EN: Q: 文言
+A: Language

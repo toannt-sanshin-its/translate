@@ -10,11 +10,6 @@ Ví dụ:
     python translate_cli_llama_rag.py \
       --text "患者は末梢神経障害を伴う高血圧を呈した。"
 
-Batch:
-    python translate_cli_llama_rag.py \
-      --input_file jp_sentences.txt \
-      --output_file vi_trans.txt
-
 Yêu cầu:
     pip install sentence-transformers faiss-cpu llama-cpp-python==0.2.90 transformers
 
@@ -22,7 +17,7 @@ Gợi ý build GPU cho llama-cpp-python:
     CMAKE_ARGS="-DLLAMA_CUBLAS=on" pip install llama-cpp-python --no-binary :all:
 """
 from __future__ import annotations
-import argparse # parse CLI flags
+import argparse
 import json
 import os
 import pickle  # load metadata index
@@ -34,8 +29,7 @@ import numpy as np
 from sentence_transformers import SentenceTransformer
 from ctransformers import AutoModelForCausalLM        #  wrapper gọi LLaMA.cpp model
 from config import Config
-import re
-from typing import Tuple, Dict
+from helper import get_entry_type_by_text, safe_get_str
 
 # ===================== TIỆN ÍCH ===================== #
 def load_resources(cfg: Config):
@@ -66,14 +60,6 @@ def load_resources(cfg: Config):
        context_length=cfg.N_CTX,           # Nâng cao: Quản lý context dài hơn: tăng cfg.N_CTX (ví dụ up to 4096 hoặc 8192 nếu model hỗ trợ)
        threads=cfg.THREADS,
     )
-    # llm = AutoModel.from_pretrained(
-    #     cfg.MODEL_PATH,            # đường dẫn tới .gguf của bạn
-    #     model_type="llama",        # Vicuna xây trên kiến trúc Llama
-    #     backend="gguf",            # định dạng file
-    #     n_ctx=cfg.N_CTX,           # context window
-    #     threads=cfg.THREADS
-    # )
-
     try:
         actual_path = getattr(llm, "model_path", None)
         print(f"✔️ Model path in LLM object: {actual_path}")
@@ -94,16 +80,6 @@ def search_topk(index: faiss.Index, vec: np.ndarray, k: int) -> Tuple[List[float
     idxs = I[0].tolist()
     return scores, idxs
 
-# Truy nested dict an toàn
-def safe_get(meta: dict, *keys, default: str = "") -> str:
-    """Lấy giá trị từ dict lồng nhau, nếu không có trả default."""
-    cur = meta
-    for k in keys:
-        if not isinstance(cur, dict) or k not in cur:
-            return default
-        cur = cur[k]
-    return cur if isinstance(cur, str) else default
-
 def build_context(metas, idxs, scores, jp, cfg: Config) -> str:
     seen_vi = set()
     chunks = []
@@ -114,12 +90,20 @@ def build_context(metas, idxs, scores, jp, cfg: Config) -> str:
             continue
 
         # 2. Lấy bản dịch mẫu (VI)
-        m      = metas[idx]
+        m = metas[idx]
+        print('===============idx================')
+        print(idx)
         print('===============metas[idx]================')
         print(metas[idx])
-        jp_ex = safe_get(m, "text")
-        vi_ex  = safe_get(m, "translation") \
-               or safe_get(m, "metadata", "translation")
+
+        # Nếu chunk này có type = 0 thì không dùng nó làm mẫu dịch
+        chunk_type = safe_get_str(m, "type")
+        if chunk_type == "0":
+            continue
+
+        jp_ex = safe_get_str(m, "text")
+        vi_ex  = safe_get_str(m, "translation") \
+               or safe_get_str(m, "metadata", "translation")
         if not vi_ex:
             continue
 
@@ -129,22 +113,13 @@ def build_context(metas, idxs, scores, jp, cfg: Config) -> str:
         seen_vi.add(vi_ex)
 
         # 4. Thêm vào chunks
-        # chunks.append(f"- Example: {vi_ex}")
         chunks.append(f"Q: {jp_ex}\nA: {vi_ex}\n\n")
 
-        # # 5. Giới hạn số ví dụ
-        # if len(chunks) >= getattr(cfg, "CONTEXT_EXAMPLES", 2):
-        #     break
-
-    # Nếu không có example nào, trả về chuỗi rỗng để LLM tự fallback
     return "\n".join(chunks)
 
 def call_ctfm(llm, cfg: Config, context: str, query: str) -> str:
     # kết hợp system + user prompt thành 1 chuỗi
     user_prompt = cfg.USER_PROMPT_TEMPLATE.format(context=context, query=query)
-
-    # prompt = f"<<SYS>>{cfg.SYSTEM_PROMPT}<</SYS>>\n{user_prompt}\n"
-    # prompt = f"{cfg.SYSTEM_PROMPT}\n{user_prompt}\n"
     prompt = (
         "[INST] "
         f"<<SYS>>\n{cfg.SYSTEM_PROMPT}\n<</SYS>>\n\n"
@@ -162,11 +137,17 @@ def call_ctfm(llm, cfg: Config, context: str, query: str) -> str:
     ).strip()
 
 def translate_one(emb, index, metas, llm, cfg: Config, jp: str) -> Tuple[str, str, float]:
+    # 0. Kiểm tra type của câu input: nếu '0' thì không dịch
+    jp_type = get_entry_type_by_text(metas, jp)
+    if jp_type == "0":
+        return jp, "no_translation", 1.0
+
     # 1. Embed & search
     vec = embed_sentence(emb, jp, normalize=cfg.NORMALIZE_EMB)
     scores, idxs = search_topk(index, vec, cfg.TOP_K)
     print("============================= Score =======================")
     print(scores)
+    print(index.ntotal)
     best_score = scores[0]
 
     # 2. Build context chỉ khi neighbor đầu tiên đủ tốt
@@ -179,44 +160,6 @@ def translate_one(emb, index, metas, llm, cfg: Config, jp: str) -> Tuple[str, st
 
 def get_device_label(cfg: Config) -> str:
     return "GPU" if getattr(cfg, "gpu_layers", 0) and cfg.gpu_layers > 0 else "CPU"
-
-# def evaluate_bleu(
-#     emb,
-#     index: faiss.Index,
-#     metas: List[dict],
-#     llm,
-#     cfg,
-#     test_data: List[Tuple[str, str]],
-# ) -> float:
-#     """
-#     Compute corpus-level BLEU over a test set.
-#     test_data: List of (jp_sentence, reference_translation).
-#     Returns BLEU score in [0,100].
-#     """
-#     smoothie = SmoothingFunction().method1
-#     references, hypotheses = [], []
-
-#     for jp_sentence, gold_ref in test_data:
-#         # Dịch câu (đã bao gồm tách label segments)
-#         pred = translate_one(emb, index, metas, llm, cfg, jp_sentence)
-
-#         # Tokenize on whitespace
-#         hyp_tokens = pred.strip().split()
-#         ref_tokens = gold_ref.strip().split()
-
-#         hypotheses.append(hyp_tokens)
-#         # BLEU expects list of possible references per hypothesis
-#         references.append([ref_tokens])
-
-#     bleu = corpus_bleu(
-#         references,
-#         hypotheses,
-#         weights=(0.25,0.25,0.25,0.25),
-#         smoothing_function=smoothie
-#     ) * 100.0
-
-#     print(f"\n=== Corpus BLEU score: {bleu:.2f} ===")
-#     return bleu
 
 # ===================== MAIN ===================== #
 def parse_args():

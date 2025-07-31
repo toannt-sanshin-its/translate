@@ -1,111 +1,69 @@
 #!/usr/bin/env python
 """
-Tạo FAISS index từ file .jsonl có format:
-{
-  "id": "...",
-  "text": "...",           # tiếng Nhật
-  "metadata": {
-      "language": "ja",
-      "translation": "...",# tiếng Việt (nếu đã có)
-      ...
-  }
-}
-
 Chạy:
-    python build_index.py data/ja_vi.jsonl indexes/
+    Chạy lần đầu init vectordb: python build_index.py data/ja_vi.jsonl indexes/
+    Chạy để thêm data vào vectordb python build_index.py --extend data/new_chunks.jsonl indexes/
 """
 
 import argparse
-import json
 import pathlib
 import pickle
 import os
-import numpy as np
-import hashlib
 import faiss
-from sentence_transformers import SentenceTransformer
-from transformers import AutoTokenizer
-from langchain.text_splitter import RecursiveCharacterTextSplitter
+from helper import fingerprint, load_jsonl, should_add, make_embedding_tools
 
-# --- 1. Đọc tham số CLI ---
+# --- CLI ---
 def parse_args():
     parser = argparse.ArgumentParser(
         description="Build FAISS index cho dữ liệu Nhật-Việt (có chunking)"
     )
-    parser.add_argument("jsonl_path", help="Đường dẫn file .jsonl")
+    parser.add_argument("jsonl_path", help="Input JSONL file")
     parser.add_argument("out_dir", help="Thư mục ghi index/metadata")
-    parser.add_argument(
-        "--max_tokens", type=int, default=256,
-        help="Số token tối đa mỗi chunk"
-    )
-    parser.add_argument(
-        "--stride", type=int, default=50,
-        help="Overlap token giữa các chunk"
-    )
+    parser.add_argument("--max_tokens", type=int, default=256, help="Số token tối đa mỗi chunk")
+    parser.add_argument("--stride", type=int, default=50, help="Overlap token giữa các chunk")
+    parser.add_argument("--extend", action='store_true', 
+                        help="Extend existing index (with dedup)") # Nếu có --extend → gán args.extend = True; nếu không có → False
     return parser.parse_args()
 
-# --- 2. Hash fingerprint để dedup text ---
-def fingerprint(text: str) -> str:
-    return hashlib.md5(text.encode('utf-8')).hexdigest()
-
-# --- 3. Load data và chunking ---
-def load_and_chunk(jsonl_path, splitter):
+# --- Load data và chunking ---
+def load_and_chunk(jsonl_path, splitter, seen_fps=None):
     texts, metas = [], []
+    dedup = seen_fps is not None
     for obj in load_jsonl(jsonl_path):
         if obj.get("metadata", {}).get("language") != "ja":
             continue
         chunks = splitter.split_text(obj["text"])
         for idx, txt in enumerate(chunks):
+            if dedup:
+                if not should_add(txt, seen_fps): # nếu có trong fingerprinter thì ko cho add vào db
+                    continue
             texts.append(txt)
             metas.append({
-                "id": f"{obj['id']}_chunk{idx}",
+                "id": f"doc{obj['id']}_chunk{idx}",
                 "text": txt,
                 "translation": obj["metadata"].get("translation", ""),
+                "type": obj["metadata"].get("type", ""),
             })
     return texts, metas
 
-def load_jsonl(path):
-    with open(path, encoding="utf-8") as f:
-        for line in f:
-            yield json.loads(line)
-
-def main():
-    args = parse_args()
+# --- 1. Build mới (no dedup) ---
+def init_index(jsonl_path: str, index_dir: pathlib.Path, max_tokens: int, stride: int):
+    # Paths
+    idx_path = index_dir / 'faiss.index'
+    meta_path = index_dir / 'meta.pkl'
+    fps_path = index_dir / 'seen_fps.pkl'
 
     # --- Thiết lập model & tokenizer ---
-    print("🔄 Nạp model embedding ...")
-    emb_model = SentenceTransformer(
-        os.getenv("EMB_MODEL", "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2")
-    )
-    hf_tokenizer = AutoTokenizer.from_pretrained(
-        os.getenv("EMB_MODEL", "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"),
-        use_fast=True
-    ) # Chia chuỗi text thành token IDs rồi ngược lại từ IDs thành text.
-
-    # Tạo Recursive splitter
-    text_splitter = RecursiveCharacterTextSplitter(
-        # các separator ưu tiên cắt: ngắt câu Nhật, dấu xuống dòng đôi, rồi ký tự bất kỳ
-        separators=["。", "！", "？", "\n\n", ""],
-        chunk_size=args.max_tokens,
-        chunk_overlap=args.stride,
-        length_function=lambda x: len(hf_tokenizer.encode(x))
+    model_name = os.getenv("EMB_MODEL", "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2")
+    emb_model, hf_tokenizer, text_splitter = make_embedding_tools(
+        model_name,
+        max_tokens=max_tokens,
+        stride=stride
     )
 
-    texts, metas = [], []
-    print("📥 Đọc & chunk dữ liệu... sử dụng CharacterTextSplitter")
-    for obj in load_jsonl(args.jsonl_path):
-        if obj.get("metadata", {}).get("language") != "ja":
-            continue
-        chunks = text_splitter.split_text(obj["text"])
-        for idx, txt in enumerate(chunks):
-            texts.append(txt)
-            metas.append({
-                "id": f"{obj['id']}_chunk{idx}",
-                "text": txt,
-                # chỉ giữ translation để tiết kiệm metadata
-                "translation": obj["metadata"].get("translation", ""),
-            })
-
+    # Read & chunk
+    print("📥 Đọc & chunk dữ liệu... sử dụng RecursiveCharacterTextSplitter")
+    texts, metas = load_and_chunk(jsonl_path, text_splitter, seen_fps=None)
     # --- Encode vectors ---
     print("⚙️ Encoding vectors...")
     vecs = emb_model.encode(
@@ -117,19 +75,77 @@ def main():
 
     # --- Build FAISS index ---
     dim = vecs.shape[1]    # chiều, đang dùng là 384 chiều
-    print('vecs', vecs)
-    print('dim', dim)
     index = faiss.IndexFlatIP(dim)        # IP = cosine do vec đã chuẩn hoá
     index.add(vecs)
 
-    # --- Ghi ra đĩa ---
-    out_dir = pathlib.Path(args.out_dir)
-    out_dir.mkdir(parents=True, exist_ok=True)
-    faiss.write_index(index, str(out_dir / "faiss.index"))
-    with open(out_dir / "meta.pkl", "wb") as fp: # Mở file ở chế độ nhị phân (“wb”)
-        pickle.dump(metas, fp) # biến thành 1 luồng dữ liệu nhị phân (gọi là pickle stream) và ghi vào file
+    # Prepare seen_fps (all new)
+    seen_fps = {fingerprint(txt) for txt in texts}
 
-    print(f"✅ Đã lập chỉ mục {len(texts)} chunks → {out_dir}")
+    # Persist
+    index_dir.mkdir(parents=True, exist_ok=True)
+    faiss.write_index(index, str(idx_path))
+    pickle.dump(metas, meta_path.open('wb'))
+    pickle.dump(seen_fps, fps_path.open('wb'))
 
+    print(f"✅ Initialized index: {len(texts)} chunks added.")
+
+# --- 2. Extend (with dedup) ---
+def extend_index(jsonl_path: str, index_dir: pathlib.Path, max_tokens: int, stride: int):
+    # Paths
+    idx_path = index_dir / 'faiss.index'
+    meta_path = index_dir / 'meta.pkl'
+    fps_path = index_dir / 'seen_fps.pkl'
+
+    # Load previous state
+    index = faiss.read_index(str(idx_path))
+    metas = pickle.load(meta_path.open('rb'))
+    seen_fps = pickle.load(fps_path.open('rb'))
+
+    # --- Thiết lập model & tokenizer ---
+    model_name = os.getenv("EMB_MODEL", "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2")
+    emb_model, hf_tokenizer, text_splitter = make_embedding_tools(
+        model_name,
+        max_tokens=max_tokens,
+        stride=stride
+    )
+
+    # Process new file
+    print("📥 Đọc & chunk dữ liệu... sử dụng RecursiveCharacterTextSplitter")
+    new_texts, new_metas = load_and_chunk(jsonl_path, text_splitter, seen_fps)
+    # Batch encode & add
+    new_count = len(new_texts)
+    if new_count:
+        vecs = emb_model.encode(new_texts, normalize_embeddings=True).astype('float32')
+        index.add(vecs)
+        metas.extend(new_metas)
+
+    # Persist updated state
+    faiss.write_index(index, str(idx_path))
+    pickle.dump(metas, meta_path.open('wb'))
+    pickle.dump(seen_fps, fps_path.open('wb'))
+
+    print(f"✅ Extended index: {new_count} new chunks added."
+          f" Total now: {index.ntotal}")
+
+def main():
+    args = parse_args()
+    idx_dir = pathlib.Path(args.out_dir)
+
+    if args.extend and idx_dir.joinpath('faiss.index').exists():
+        extend_index(
+            jsonl_path=args.jsonl_path,
+            index_dir=idx_dir,
+            max_tokens=args.max_tokens,
+            stride=args.stride
+        )
+    else:
+        init_index(
+            jsonl_path=args.jsonl_path,
+            index_dir=idx_dir,
+            max_tokens=args.max_tokens,
+            stride=args.stride
+        )
+
+# ----------------------- MAIN ------------------------        
 if __name__ == "__main__":
     main()
