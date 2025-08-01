@@ -862,3 +862,6 @@ TIME: 28.1032	SCORE: 0.7213	DEVICE: CPU	JP: 文言	EN: Q: 文言
 A: Language
 TIME: 20.1565	SCORE: 0.7213	DEVICE: CPU	JP: 文言	EN: Q: 文言
 A: Language
+TIME: 32.8448	SCORE: 1.0000	DEVICE: CPU	JP: 更新日	EN: A: Update Date
+TIME: 7.5636	SCORE: 1.0000	DEVICE: CPU	JP: 更新日	EN: Q: 更新日
+A: Update Date

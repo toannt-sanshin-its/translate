@@ -56,7 +56,7 @@ def parse_doc_number_from_id(id_str: str) -> int:
     """
     Summary: Lấy số doc từ id kiểu '1235_1'. Trả về 0 nếu không parse được.
     """
-    # Hỗ trợ cả hai format: '1235_1' và 'doc1235_chunk_1'
+    # Hỗ trợ cả hai format: '1235_1'
     m = re.match(r'^(\d+)_', id_str)
     if m:
         return int(m.group(1))
@@ -127,14 +127,14 @@ def extend_index(jsonl_path: str, index_dir: pathlib.Path, max_tokens: int, stri
     meta_path = index_dir / 'meta.pkl'
     fps_path = index_dir / 'seen_fps.pkl'
 
-    # Tính doc số bắt đầu: lấy max hiện có rồi +1
-    current_max_doc = max_existing_doc_number(metas)
-    start_doc = current_max_doc + 1
-
     # Load previous state
     index = faiss.read_index(str(idx_path))
     metas = pickle.load(meta_path.open('rb'))
     seen_fps = pickle.load(fps_path.open('rb'))
+
+    # Tính doc số bắt đầu: lấy max hiện có rồi +1
+    current_max_doc = max_existing_doc_number(metas)
+    start_doc = current_max_doc + 1
 
     # --- Thiết lập model & tokenizer ---
     model_name = os.getenv("EMB_MODEL", "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2")
